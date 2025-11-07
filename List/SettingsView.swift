@@ -17,6 +17,7 @@ struct SettingsView: View {
     @Query private var recreations: [Recreation]
     
     @ObservedObject var localizationManager = LocalizationManager.shared
+    @ObservedObject var themeManager = ThemeManager.shared
     @State private var showingResetAlert = false
     @State private var showingExportShare = false
     @State private var showingImportPicker = false
@@ -37,6 +38,16 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
+                Section("settings.appearance".localized()) {
+                    Picker("settings.theme".localized(), selection: $themeManager.currentTheme) {
+                        ForEach(AppTheme.allCases) { theme in
+                            Text(theme.displayName)
+                                .tag(theme)
+                        }
+                    }
+                    .pickerStyle(.menu)
+                }
+                
                 Section("settings.language".localized()) {
                     Picker("settings.app_language".localized(), selection: $localizationManager.currentLanguage) {
                         ForEach(AppLanguage.allCases) { language in

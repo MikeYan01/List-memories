@@ -10,6 +10,7 @@ import SwiftData
 
 struct ContentView: View {
     @ObservedObject var localizationManager = LocalizationManager.shared
+    @ObservedObject var themeManager = ThemeManager.shared
     
     var body: some View {
         TabView {
@@ -39,6 +40,7 @@ struct ContentView: View {
                 }
         }
         .tint(.pink)
+        .preferredColorScheme(themeManager.currentTheme.colorScheme)
     }
 }
 
