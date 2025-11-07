@@ -1,0 +1,192 @@
+/* 
+  Localizable.strings (Chinese Simplified)
+  List
+*/
+
+// Tab Bar
+"tab.restaurant" = "吃";
+"tab.beverage" = "喝";
+"tab.travel" = "玩";
+"tab.recreation" = "乐";
+"tab.settings" = "设置";
+
+// Settings View
+"settings.title" = "设置";
+"settings.statistics" = "统计";
+"settings.restaurant" = "餐厅";
+"settings.beverage" = "饮品";
+"settings.travel" = "旅行";
+"settings.recreation" = "娱乐";
+"settings.total_records" = "总记录数";
+"settings.data_management" = "数据管理";
+"settings.export_data" = "导出数据";
+"settings.import_data" = "导入数据";
+"settings.clear_all_data" = "清空所有数据";
+"settings.about" = "关于";
+"settings.version" = "版本";
+"settings.language" = "语言";
+"settings.app_language" = "应用语言";
+
+// Language Settings
+"language.chinese" = "简体中文";
+"language.english" = "English";
+
+// Alerts
+"alert.clear_data.title" = "清空所有数据";
+"alert.clear_data.message" = "此操作将删除所有记录，无法恢复。确定要继续吗？";
+"alert.clear_data.confirm" = "确认清空";
+"alert.cancel" = "取消";
+"alert.confirm" = "确定";
+
+// Import/Export
+"import.title" = "导入选项";
+"import.replace_existing" = "替换现有数据";
+"import.replace_footer_warning" = "将删除所有现有数据并导入新数据";
+"import.add_footer" = "新数据将添加到现有数据中";
+"import.button" = "导入";
+"import.complete.title" = "导入完成";
+"import.complete.message" = "成功导入 %d 条记录\n餐厅: %d\n饮品: %d\n旅行: %d\n娱乐: %d";
+"import.error.message" = "导入失败: %@";
+"import.file_type" = "JSON 文件";
+"export.filename_prefix" = "吃喝玩乐打卡";
+
+// Beverage View
+"beverage.title" = "喝 🥤";
+"beverage.empty.title" = "还没有饮品记录";
+"beverage.empty.subtitle" = "记录你们一起品尝的每一杯";
+"beverage.search_placeholder" = "搜索店名或备注";
+"beverage.filter.title" = "筛选";
+"beverage.filter.section" = "按评分筛选";
+"beverage.filter.all" = "全部";
+"beverage.filter.high" = "高分 (8-10分)";
+"beverage.filter.medium" = "中等 (5-7分)";
+"beverage.filter.low" = "低分 (1-4分)";
+"beverage.filter.unrated" = "未评分";
+"beverage.detail.title" = "饮品详情";
+"beverage.detail.shop_name" = "店名";
+"beverage.detail.date" = "日期";
+"beverage.detail.notes" = "备注";
+"beverage.add.title" = "添加饮品";
+"beverage.edit.title" = "编辑饮品";
+"beverage.section.basic_info" = "基本信息";
+"beverage.section.photos" = "照片";
+"beverage.section.rating" = "评分";
+"beverage.section.notes" = "备注";
+"beverage.shop_name_placeholder" = "店名";
+"beverage.date_label" = "日期";
+"beverage.rating_prompt" = "选择评分 (1-10分)";
+"beverage.notes_placeholder" = "添加备注（可选）";
+
+// Common
+"common.done" = "完成";
+"common.cancel" = "取消";
+"common.save" = "保存";
+"common.edit" = "编辑";
+"common.search.empty.title" = "没有找到结果";
+"common.search.empty.subtitle" = "试试其他搜索词或筛选条件";
+
+// Recreation Types
+"recreation.type.outdoor" = "户外活动";
+"recreation.type.movie" = "电影";
+"recreation.type.concert" = "演唱会";
+"recreation.type.game" = "游戏";
+
+// Recreation View
+"recreation.title" = "乐 🎭";
+"recreation.empty.title" = "还没有娱乐记录";
+"recreation.empty.subtitle" = "记录你们一起欢乐的每个瞬间";
+"recreation.search_placeholder" = "搜索活动名称、地点或备注";
+"recreation.filter.all" = "全部";
+"recreation.detail.title" = "娱乐详情";
+"recreation.detail.type" = "类型";
+"recreation.detail.name" = "名称";
+"recreation.detail.location" = "地点";
+"recreation.detail.date" = "日期";
+"recreation.detail.notes" = "备注";
+"recreation.add.title" = "添加娱乐活动";
+"recreation.edit.title" = "编辑娱乐活动";
+"recreation.section.type" = "类型";
+"recreation.section.basic_info" = "基本信息";
+"recreation.section.photos" = "照片";
+"recreation.section.notes" = "备注";
+"recreation.type_picker" = "选择类型";
+"recreation.location_required" = "地点";
+"recreation.location_optional" = "地点（可选）";
+"recreation.date_label" = "日期";
+"recreation.notes_placeholder" = "添加备注（可选）";
+"recreation.name_placeholder.outdoor" = "活动名称（如：迪士尼）";
+"recreation.name_placeholder.movie" = "电影名称";
+"recreation.name_placeholder.concert" = "演唱会名称";
+"recreation.name_placeholder.game" = "游戏名称";
+
+// Photo Components
+"photo.add_photos" = "添加照片 (最多%d张)";
+"photo.count" = "%d 张照片";
+"photo.delete.title" = "删除照片";
+"photo.delete.message" = "确定要删除这张照片吗？";
+"photo.delete.confirm" = "删除";
+"photo.gallery.done" = "完成";
+
+// Restaurant View
+"restaurant.title" = "吃 🍽️";
+"restaurant.empty.title" = "还没有美食记录";
+"restaurant.empty.subtitle" = "记录你们一起享用的每一餐";
+"restaurant.search_placeholder" = "搜索餐厅、地点或备注";
+"restaurant.filter.title" = "筛选";
+"restaurant.filter.section" = "按评分筛选";
+"restaurant.filter.all" = "全部";
+"restaurant.filter.high" = "高分 (8-10分)";
+"restaurant.filter.medium" = "中等 (5-7分)";
+"restaurant.filter.low" = "低分 (1-4分)";
+"restaurant.filter.unrated" = "未评分";
+"restaurant.detail.title" = "餐厅详情";
+"restaurant.detail.name" = "餐厅名称";
+"restaurant.detail.location" = "地点";
+"restaurant.detail.date" = "日期";
+"restaurant.detail.notes" = "备注";
+"restaurant.add.title" = "添加餐厅";
+"restaurant.edit.title" = "编辑餐厅";
+"restaurant.section.basic_info" = "基本信息";
+"restaurant.section.photos" = "照片";
+"restaurant.section.rating" = "评分";
+"restaurant.section.notes" = "备注";
+"restaurant.name_placeholder" = "餐厅名称";
+"restaurant.location_placeholder" = "地点";
+"restaurant.date_label" = "日期";
+"restaurant.rating_prompt" = "选择评分 (1-10分)";
+"restaurant.notes_placeholder" = "添加备注（可选）";
+
+// Shared Components
+"rating.label" = "评分";
+"rating.points" = "%d 分";
+"rating.unrated" = "未评分";
+"rating.clear" = "清除评分";
+
+// Travel View
+"travel.title" = "玩 ✈️";
+"travel.empty.title" = "还没有旅行记录";
+"travel.empty.subtitle" = "记录你们一起探索的每个地方";
+"travel.search_placeholder" = "搜索目的地或备注";
+"travel.filter.title" = "筛选";
+"travel.filter.section" = "按状态筛选";
+"travel.filter.all" = "全部";
+"travel.filter.planned" = "计划中";
+"travel.filter.completed" = "已完成";
+"travel.status.planned" = "计划中";
+"travel.status.completed" = "已完成";
+"travel.detail.title" = "旅行详情";
+"travel.detail.destination" = "目的地";
+"travel.detail.planned_date" = "计划日期";
+"travel.detail.actual_date" = "实际日期";
+"travel.detail.status" = "状态";
+"travel.detail.notes" = "备注";
+"travel.add.title" = "添加旅行";
+"travel.edit.title" = "编辑旅行";
+"travel.section.basic_info" = "基本信息";
+"travel.section.photos" = "照片";
+"travel.section.notes" = "备注";
+"travel.destination_placeholder" = "目的地";
+"travel.planned_date_label" = "计划日期";
+"travel.actual_date_label" = "实际日期";
+"travel.completed_toggle" = "已完成旅行";
+"travel.notes_placeholder" = "添加备注（可选）";

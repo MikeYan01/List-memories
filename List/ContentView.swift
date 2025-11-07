@@ -9,31 +9,33 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @ObservedObject var localizationManager = LocalizationManager.shared
+    
     var body: some View {
         TabView {
             RestaurantView()
                 .tabItem {
-                    Label("吃", systemImage: "fork.knife")
+                    Label("tab.restaurant".localized(), systemImage: "fork.knife")
                 }
             
             BeverageView()
                 .tabItem {
-                    Label("喝", systemImage: "wineglass")
+                    Label("tab.beverage".localized(), systemImage: "wineglass")
                 }
             
             TravelView()
                 .tabItem {
-                    Label("玩", systemImage: "airplane.departure")
+                    Label("tab.travel".localized(), systemImage: "airplane.departure")
                 }
             
             RecreationView()
                 .tabItem {
-                    Label("乐", systemImage: "theatermasks.fill")
+                    Label("tab.recreation".localized(), systemImage: "theatermasks.fill")
                 }
             
             SettingsView()
                 .tabItem {
-                    Label("设置", systemImage: "gearshape.fill")
+                    Label("tab.settings".localized(), systemImage: "gearshape.fill")
                 }
         }
         .tint(.pink)

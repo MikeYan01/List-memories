@@ -11,15 +11,24 @@ import SwiftData
 struct TravelView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Travel.plannedDate, order: .reverse) private var travels: [Travel]
+    @ObservedObject var localizationManager = LocalizationManager.shared
     @State private var showingAddSheet = false
     @State private var searchText = ""
     @State private var selectedStatusFilter: StatusFilter = .all
     @State private var showingFilterSheet = false
     
     enum StatusFilter: String, CaseIterable {
-        case all = "全部"
-        case planned = "计划中"
-        case completed = "已完成"
+        case all = "all"
+        case planned = "planned"
+        case completed = "completed"
+        
+        var localizedName: String {
+            switch self {
+            case .all: return "travel.filter.all".localized()
+            case .planned: return "travel.filter.planned".localized()
+            case .completed: return "travel.filter.completed".localized()
+            }
+        }
         
         func matches(_ travel: Travel) -> Bool {
             switch self {
@@ -48,8 +57,8 @@ struct TravelView: View {
                 if travels.isEmpty {
                     EmptyStateView(
                         icon: "airplane.departure",
-                        title: "还没有旅行记录",
-                        subtitle: "记录你们一起探索的每个地方"
+                        title: "travel.empty.title".localized(),
+                        subtitle: "travel.empty.subtitle".localized()
                     )
                 } else {
                     VStack(spacing: 0) {
@@ -58,7 +67,7 @@ struct TravelView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
                                     FilterChip(
-                                        title: selectedStatusFilter.rawValue,
+                                        title: selectedStatusFilter.localizedName,
                                         isSelected: true
                                     ) {
                                         selectedStatusFilter = .all
@@ -73,8 +82,8 @@ struct TravelView: View {
                         if filteredTravels.isEmpty {
                             EmptyStateView(
                                 icon: "magnifyingglass",
-                                title: "没有找到结果",
-                                subtitle: "试试其他搜索词或筛选条件"
+                                title: "common.search.empty.title".localized(),
+                                subtitle: "common.search.empty.subtitle".localized()
                             )
                         } else {
                             List {
@@ -92,8 +101,8 @@ struct TravelView: View {
                     }
                 }
             }
-            .navigationTitle("玩 ✈️")
-            .searchable(text: $searchText, prompt: "搜索目的地或备注")
+            .navigationTitle("travel.title".localized())
+            .searchable(text: $searchText, prompt: "travel.search_placeholder".localized())
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -141,14 +150,14 @@ struct TravelFilterView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("按状态筛选") {
+                Section("travel.filter.section".localized()) {
                     ForEach(TravelView.StatusFilter.allCases, id: \.self) { filter in
                         Button {
                             selectedStatus = filter
                             dismiss()
                         } label: {
                             HStack {
-                                Text(filter.rawValue)
+                                Text(filter.localizedName)
                                     .foregroundStyle(.primary)
                                 Spacer()
                                 if selectedStatus == filter {
@@ -160,11 +169,11 @@ struct TravelFilterView: View {
                     }
                 }
             }
-            .navigationTitle("筛选")
+            .navigationTitle("travel.filter.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("完成") {
+                    Button("common.done".localized()) {
                         dismiss()
                     }
                 }
@@ -200,12 +209,12 @@ struct TravelRow: View {
                     Spacer()
                     
                     VStack(alignment: .trailing, spacing: 2) {
-                        Text(displayDate, style: .date)
+                        Text(displayDate.formattedSimple())
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         
                         if isPlanned {
-                            Text("计划中")
+                            Text("travel.status.planned".localized())
                                 .font(.caption2)
                                 .foregroundStyle(.white)
                                 .padding(.horizontal, 6)
@@ -243,11 +252,11 @@ struct TravelDetailView: View {
     var body: some View {
         List {
             Section {
-                DetailRow(icon: "mappin.and.ellipse", label: "目的地", value: travel.destination)
-                DetailRow(icon: "calendar", label: "计划日期", value: travel.plannedDate.formatted(date: .long, time: .omitted))
+                DetailRow(icon: "mappin.and.ellipse", label: "travel.detail.destination".localized(), value: travel.destination)
+                DetailRow(icon: "calendar", label: "travel.detail.planned_date".localized(), value: travel.plannedDate.formattedSimple())
                 
                 if let actualDate = travel.actualDate {
-                    DetailRow(icon: "checkmark.circle.fill", label: "实际日期", value: actualDate.formatted(date: .long, time: .omitted))
+                    DetailRow(icon: "checkmark.circle.fill", label: "travel.detail.actual_date".localized(), value: actualDate.formattedSimple())
                 } else {
                     HStack(spacing: 12) {
                         Image(systemName: "info.circle.fill")
@@ -255,10 +264,10 @@ struct TravelDetailView: View {
                             .frame(width: 24)
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("状态")
+                            Text("travel.detail.status".localized())
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            Text("计划中")
+                            Text("travel.status.planned".localized())
                                 .font(.body)
                                 .foregroundStyle(.blue)
                         }
@@ -277,20 +286,20 @@ struct TravelDetailView: View {
             }
             
             if !travel.notes.isEmpty {
-                Section("备注") {
+                Section("travel.detail.notes".localized()) {
                     Text(travel.notes)
                         .foregroundStyle(.secondary)
                 }
             }
         }
-        .navigationTitle("旅行详情")
+        .navigationTitle("travel.detail.title".localized())
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     showingEditSheet = true
                 } label: {
-                    Text("编辑")
+                    Text("common.edit".localized())
                         .foregroundStyle(.pink)
                 }
             }
@@ -315,39 +324,41 @@ struct AddTravelView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("基本信息") {
-                    TextField("目的地", text: $destination)
-                    DatePicker("计划日期", selection: $plannedDate, displayedComponents: .date)
+                Section("travel.section.basic_info".localized()) {
+                    TextField("travel.destination_placeholder".localized(), text: $destination)
+                    DatePicker("travel.planned_date_label".localized(), selection: $plannedDate, displayedComponents: .date)
+                        .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
                 }
                 
                 Section {
-                    Toggle("已完成旅行", isOn: $hasActualDate)
+                    Toggle("travel.completed_toggle".localized(), isOn: $hasActualDate)
                     
                     if hasActualDate {
-                        DatePicker("实际日期", selection: $actualDate, displayedComponents: .date)
+                        DatePicker("travel.actual_date_label".localized(), selection: $actualDate, displayedComponents: .date)
+                            .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
                     }
                 }
                 
-                Section("照片") {
+                Section("travel.section.photos".localized()) {
                     MultiplePhotosPickerView(photosData: $photosData)
                 }
                 
-                Section("备注") {
-                    TextField("添加备注（可选）", text: $notes, axis: .vertical)
+                Section("travel.section.notes".localized()) {
+                    TextField("travel.notes_placeholder".localized(), text: $notes, axis: .vertical)
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("添加旅行")
+            .navigationTitle("travel.add.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") {
+                    Button("common.cancel".localized()) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button("common.save".localized()) {
                         saveTravel()
                     }
                     .disabled(destination.isEmpty)
@@ -385,39 +396,41 @@ struct EditTravelView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("基本信息") {
-                    TextField("目的地", text: $destination)
-                    DatePicker("计划日期", selection: $plannedDate, displayedComponents: .date)
+                Section("travel.section.basic_info".localized()) {
+                    TextField("travel.destination_placeholder".localized(), text: $destination)
+                    DatePicker("travel.planned_date_label".localized(), selection: $plannedDate, displayedComponents: .date)
+                        .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
                 }
                 
                 Section {
-                    Toggle("已完成旅行", isOn: $hasActualDate)
+                    Toggle("travel.completed_toggle".localized(), isOn: $hasActualDate)
                     
                     if hasActualDate {
-                        DatePicker("实际日期", selection: $actualDate, displayedComponents: .date)
+                        DatePicker("travel.actual_date_label".localized(), selection: $actualDate, displayedComponents: .date)
+                            .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
                     }
                 }
                 
-                Section("照片") {
+                Section("travel.section.photos".localized()) {
                     MultiplePhotosPickerView(photosData: $photosData)
                 }
                 
-                Section("备注") {
-                    TextField("添加备注（可选）", text: $notes, axis: .vertical)
+                Section("travel.section.notes".localized()) {
+                    TextField("travel.notes_placeholder".localized(), text: $notes, axis: .vertical)
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("编辑旅行")
+            .navigationTitle("travel.edit.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") {
+                    Button("common.cancel".localized()) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button("common.save".localized()) {
                         saveChanges()
                     }
                     .disabled(destination.isEmpty)

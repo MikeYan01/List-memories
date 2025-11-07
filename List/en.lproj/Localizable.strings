@@ -1,0 +1,192 @@
+/* 
+  Localizable.strings (English)
+  List
+*/
+
+// Tab Bar
+"tab.restaurant" = "Eat";
+"tab.beverage" = "Drink";
+"tab.travel" = "Travel";
+"tab.recreation" = "Fun";
+"tab.settings" = "Settings";
+
+// Settings View
+"settings.title" = "Settings";
+"settings.statistics" = "Statistics";
+"settings.restaurant" = "Restaurants";
+"settings.beverage" = "Beverages";
+"settings.travel" = "Travels";
+"settings.recreation" = "Recreation";
+"settings.total_records" = "Total Records";
+"settings.data_management" = "Data Management";
+"settings.export_data" = "Export Data";
+"settings.import_data" = "Import Data";
+"settings.clear_all_data" = "Clear All Data";
+"settings.about" = "About";
+"settings.version" = "Version";
+"settings.language" = "Language";
+"settings.app_language" = "App Language";
+
+// Language Settings
+"language.chinese" = "简体中文";
+"language.english" = "English";
+
+// Alerts
+"alert.clear_data.title" = "Clear All Data";
+"alert.clear_data.message" = "This will delete all records and cannot be undone. Are you sure you want to continue?";
+"alert.clear_data.confirm" = "Confirm Clear";
+"alert.cancel" = "Cancel";
+"alert.confirm" = "OK";
+
+// Import/Export
+"import.title" = "Import Options";
+"import.replace_existing" = "Replace Existing Data";
+"import.replace_footer_warning" = "This will delete all existing data and import new data";
+"import.add_footer" = "New data will be added to existing data";
+"import.button" = "Import";
+"import.complete.title" = "Import Complete";
+"import.complete.message" = "Successfully imported %d records\nRestaurants: %d\nBeverages: %d\nTravels: %d\nRecreation: %d";
+"import.error.message" = "Import failed: %@";
+"import.file_type" = "JSON File";
+"export.filename_prefix" = "Memories_Checkin";
+
+// Beverage View
+"beverage.title" = "Drink 🥤";
+"beverage.empty.title" = "No beverage records yet";
+"beverage.empty.subtitle" = "Record every drink you taste together";
+"beverage.search_placeholder" = "Search shop name or notes";
+"beverage.filter.title" = "Filter";
+"beverage.filter.section" = "Filter by Rating";
+"beverage.filter.all" = "All";
+"beverage.filter.high" = "High Rated (8-10)";
+"beverage.filter.medium" = "Medium Rated (5-7)";
+"beverage.filter.low" = "Low Rated (1-4)";
+"beverage.filter.unrated" = "Unrated";
+"beverage.detail.title" = "Beverage Details";
+"beverage.detail.shop_name" = "Shop Name";
+"beverage.detail.date" = "Date";
+"beverage.detail.notes" = "Notes";
+"beverage.add.title" = "Add Beverage";
+"beverage.edit.title" = "Edit Beverage";
+"beverage.section.basic_info" = "Basic Info";
+"beverage.section.photos" = "Photos";
+"beverage.section.rating" = "Rating";
+"beverage.section.notes" = "Notes";
+"beverage.shop_name_placeholder" = "Shop Name";
+"beverage.date_label" = "Date";
+"beverage.rating_prompt" = "Select rating (1-10)";
+"beverage.notes_placeholder" = "Add notes (optional)";
+
+// Common
+"common.done" = "Done";
+"common.cancel" = "Cancel";
+"common.save" = "Save";
+"common.edit" = "Edit";
+"common.search.empty.title" = "No results found";
+"common.search.empty.subtitle" = "Try different search terms or filters";
+
+// Recreation Types
+"recreation.type.outdoor" = "Outdoor Activity";
+"recreation.type.movie" = "Movie";
+"recreation.type.concert" = "Concert";
+"recreation.type.game" = "Game";
+
+// Recreation View
+"recreation.title" = "Fun 🎭";
+"recreation.empty.title" = "No recreation records yet";
+"recreation.empty.subtitle" = "Record every joyful moment together";
+"recreation.search_placeholder" = "Search activity name, location or notes";
+"recreation.filter.all" = "All";
+"recreation.detail.title" = "Recreation Details";
+"recreation.detail.type" = "Type";
+"recreation.detail.name" = "Name";
+"recreation.detail.location" = "Location";
+"recreation.detail.date" = "Date";
+"recreation.detail.notes" = "Notes";
+"recreation.add.title" = "Add Recreation";
+"recreation.edit.title" = "Edit Recreation";
+"recreation.section.type" = "Type";
+"recreation.section.basic_info" = "Basic Info";
+"recreation.section.photos" = "Photos";
+"recreation.section.notes" = "Notes";
+"recreation.type_picker" = "Select Type";
+"recreation.location_required" = "Location";
+"recreation.location_optional" = "Location (optional)";
+"recreation.date_label" = "Date";
+"recreation.notes_placeholder" = "Add notes (optional)";
+"recreation.name_placeholder.outdoor" = "Activity name (e.g., Disneyland)";
+"recreation.name_placeholder.movie" = "Movie title";
+"recreation.name_placeholder.concert" = "Concert name";
+"recreation.name_placeholder.game" = "Game name";
+
+// Photo Components
+"photo.add_photos" = "Add photos (max %d)";
+"photo.count" = "%d photos";
+"photo.delete.title" = "Delete Photo";
+"photo.delete.message" = "Are you sure you want to delete this photo?";
+"photo.delete.confirm" = "Delete";
+"photo.gallery.done" = "Done";
+
+// Restaurant View
+"restaurant.title" = "Eat 🍽️";
+"restaurant.empty.title" = "No restaurant records yet";
+"restaurant.empty.subtitle" = "Record every meal you enjoy together";
+"restaurant.search_placeholder" = "Search restaurant, location or notes";
+"restaurant.filter.title" = "Filter";
+"restaurant.filter.section" = "Filter by Rating";
+"restaurant.filter.all" = "All";
+"restaurant.filter.high" = "High Rated (8-10)";
+"restaurant.filter.medium" = "Medium Rated (5-7)";
+"restaurant.filter.low" = "Low Rated (1-4)";
+"restaurant.filter.unrated" = "Unrated";
+"restaurant.detail.title" = "Restaurant Details";
+"restaurant.detail.name" = "Restaurant Name";
+"restaurant.detail.location" = "Location";
+"restaurant.detail.date" = "Date";
+"restaurant.detail.notes" = "Notes";
+"restaurant.add.title" = "Add Restaurant";
+"restaurant.edit.title" = "Edit Restaurant";
+"restaurant.section.basic_info" = "Basic Info";
+"restaurant.section.photos" = "Photos";
+"restaurant.section.rating" = "Rating";
+"restaurant.section.notes" = "Notes";
+"restaurant.name_placeholder" = "Restaurant Name";
+"restaurant.location_placeholder" = "Location";
+"restaurant.date_label" = "Date";
+"restaurant.rating_prompt" = "Select rating (1-10)";
+"restaurant.notes_placeholder" = "Add notes (optional)";
+
+// Shared Components
+"rating.label" = "Rating";
+"rating.points" = "%d points";
+"rating.unrated" = "Unrated";
+"rating.clear" = "Clear Rating";
+
+// Travel View
+"travel.title" = "Travel ✈️";
+"travel.empty.title" = "No travel records yet";
+"travel.empty.subtitle" = "Record every place you explore together";
+"travel.search_placeholder" = "Search destination or notes";
+"travel.filter.title" = "Filter";
+"travel.filter.section" = "Filter by Status";
+"travel.filter.all" = "All";
+"travel.filter.planned" = "Planned";
+"travel.filter.completed" = "Completed";
+"travel.status.planned" = "Planned";
+"travel.status.completed" = "Completed";
+"travel.detail.title" = "Travel Details";
+"travel.detail.destination" = "Destination";
+"travel.detail.planned_date" = "Planned Date";
+"travel.detail.actual_date" = "Actual Date";
+"travel.detail.status" = "Status";
+"travel.detail.notes" = "Notes";
+"travel.add.title" = "Add Travel";
+"travel.edit.title" = "Edit Travel";
+"travel.section.basic_info" = "Basic Info";
+"travel.section.photos" = "Photos";
+"travel.section.notes" = "Notes";
+"travel.destination_placeholder" = "Destination";
+"travel.planned_date_label" = "Planned Date";
+"travel.actual_date_label" = "Actual Date";
+"travel.completed_toggle" = "Completed Trip";
+"travel.notes_placeholder" = "Add notes (optional)";

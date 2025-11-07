@@ -66,10 +66,50 @@ final class Travel {
 
 // 乐 - Recreation records
 enum RecreationType: String, Codable, CaseIterable {
-    case outdoor = "户外活动"
-    case movie = "电影"
-    case concert = "演唱会"
-    case game = "游戏"
+    case outdoor = "outdoor"
+    case movie = "movie"
+    case concert = "concert"
+    case game = "game"
+    
+    var localizedName: String {
+        switch self {
+        case .outdoor: return "recreation.type.outdoor".localized()
+        case .movie: return "recreation.type.movie".localized()
+        case .concert: return "recreation.type.concert".localized()
+        case .game: return "recreation.type.game".localized()
+        }
+    }
+    
+    // Custom decoder to support legacy Chinese values
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+        
+        // Try to decode from new English values first
+        if let value = RecreationType(rawValue: rawValue) {
+            self = value
+            return
+        }
+        
+        // Fall back to legacy Chinese values
+        switch rawValue {
+        case "户外活动":
+            self = .outdoor
+        case "电影":
+            self = .movie
+        case "演唱会":
+            self = .concert
+        case "游戏":
+            self = .game
+        default:
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Cannot initialize RecreationType from invalid String value \(rawValue)"
+                )
+            )
+        }
+    }
 }
 
 @Model

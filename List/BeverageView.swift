@@ -11,17 +11,28 @@ import SwiftData
 struct BeverageView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Beverage.date, order: .reverse) private var beverages: [Beverage]
+    @ObservedObject var localizationManager = LocalizationManager.shared
     @State private var showingAddSheet = false
     @State private var searchText = ""
     @State private var selectedRatingFilter: RatingFilter = .all
     @State private var showingFilterSheet = false
     
     enum RatingFilter: String, CaseIterable {
-        case all = "全部"
-        case highRated = "高分 (8-10分)"
-        case mediumRated = "中等 (5-7分)"
-        case lowRated = "低分 (1-4分)"
-        case unrated = "未评分"
+        case all = "all"
+        case highRated = "high"
+        case mediumRated = "medium"
+        case lowRated = "low"
+        case unrated = "unrated"
+        
+        var localizedName: String {
+            switch self {
+            case .all: return "beverage.filter.all".localized()
+            case .highRated: return "beverage.filter.high".localized()
+            case .mediumRated: return "beverage.filter.medium".localized()
+            case .lowRated: return "beverage.filter.low".localized()
+            case .unrated: return "beverage.filter.unrated".localized()
+            }
+        }
         
         func matches(_ rating: Int) -> Bool {
             switch self {
@@ -52,8 +63,8 @@ struct BeverageView: View {
                 if beverages.isEmpty {
                     EmptyStateView(
                         icon: "wineglass",
-                        title: "还没有饮品记录",
-                        subtitle: "记录你们一起品尝的每一杯"
+                        title: "beverage.empty.title".localized(),
+                        subtitle: "beverage.empty.subtitle".localized()
                     )
                 } else {
                     VStack(spacing: 0) {
@@ -62,7 +73,7 @@ struct BeverageView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
                                     FilterChip(
-                                        title: selectedRatingFilter.rawValue,
+                                        title: selectedRatingFilter.localizedName,
                                         isSelected: true
                                     ) {
                                         selectedRatingFilter = .all
@@ -77,8 +88,8 @@ struct BeverageView: View {
                         if filteredBeverages.isEmpty {
                             EmptyStateView(
                                 icon: "magnifyingglass",
-                                title: "没有找到结果",
-                                subtitle: "试试其他搜索词或筛选条件"
+                                title: "common.search.empty.title".localized(),
+                                subtitle: "common.search.empty.subtitle".localized()
                             )
                         } else {
                             List {
@@ -96,8 +107,8 @@ struct BeverageView: View {
                     }
                 }
             }
-            .navigationTitle("喝 🥤")
-            .searchable(text: $searchText, prompt: "搜索店名或备注")
+            .navigationTitle("beverage.title".localized())
+            .searchable(text: $searchText, prompt: "beverage.search_placeholder".localized())
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -145,14 +156,14 @@ struct BeverageFilterView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("按评分筛选") {
+                Section("beverage.filter.section".localized()) {
                     ForEach(BeverageView.RatingFilter.allCases, id: \.self) { filter in
                         Button {
                             selectedRating = filter
                             dismiss()
                         } label: {
                             HStack {
-                                Text(filter.rawValue)
+                                Text(filter.localizedName)
                                     .foregroundStyle(.primary)
                                 Spacer()
                                 if selectedRating == filter {
@@ -164,11 +175,11 @@ struct BeverageFilterView: View {
                     }
                 }
             }
-            .navigationTitle("筛选")
+            .navigationTitle("beverage.filter.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("完成") {
+                    Button("common.done".localized()) {
                         dismiss()
                     }
                 }
@@ -195,7 +206,7 @@ struct BeverageRow: View {
                     
                     Spacer()
                     
-                    Text(beverage.date, style: .date)
+                    Text(beverage.date.formattedSimple())
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -223,8 +234,8 @@ struct BeverageDetailView: View {
     var body: some View {
         List {
             Section {
-                DetailRow(icon: "wineglass", label: "店名", value: beverage.shopName)
-                DetailRow(icon: "calendar", label: "日期", value: beverage.date.formatted(date: .long, time: .omitted))
+                DetailRow(icon: "wineglass", label: "beverage.detail.shop_name".localized(), value: beverage.shopName)
+                DetailRow(icon: "calendar", label: "beverage.detail.date".localized(), value: beverage.date.formattedSimple())
                 
                 if beverage.rating > 0 {
                     RatingRow(rating: beverage.rating)
@@ -241,20 +252,20 @@ struct BeverageDetailView: View {
             }
             
             if !beverage.notes.isEmpty {
-                Section("备注") {
+                Section("beverage.detail.notes".localized()) {
                     Text(beverage.notes)
                         .foregroundStyle(.secondary)
                 }
             }
         }
-        .navigationTitle("饮品详情")
+        .navigationTitle("beverage.detail.title".localized())
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     showingEditSheet = true
                 } label: {
-                    Text("编辑")
+                    Text("common.edit".localized())
                         .foregroundStyle(.pink)
                 }
             }
@@ -278,19 +289,20 @@ struct AddBeverageView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("基本信息") {
-                    TextField("店名", text: $shopName)
-                    DatePicker("日期", selection: $date, displayedComponents: .date)
+                Section("beverage.section.basic_info".localized()) {
+                    TextField("beverage.shop_name_placeholder".localized(), text: $shopName)
+                    DatePicker("beverage.date_label".localized(), selection: $date, displayedComponents: .date)
+                        .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
                 }
                 
-                Section("照片") {
+                Section("beverage.section.photos".localized()) {
                     MultiplePhotosPickerView(photosData: $photosData)
                 }
                 
-                Section("评分") {
+                Section("beverage.section.rating".localized()) {
                     VStack(spacing: 12) {
                         HStack {
-                            Text("选择评分 (1-10分)")
+                            Text("beverage.rating_prompt".localized())
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                             Spacer()
@@ -300,22 +312,22 @@ struct AddBeverageView: View {
                     .padding(.vertical, 8)
                 }
                 
-                Section("备注") {
-                    TextField("添加备注（可选）", text: $notes, axis: .vertical)
+                Section("beverage.section.notes".localized()) {
+                    TextField("beverage.notes_placeholder".localized(), text: $notes, axis: .vertical)
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("添加饮品")
+            .navigationTitle("beverage.add.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") {
+                    Button("common.cancel".localized()) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button("common.save".localized()) {
                         saveBeverage()
                     }
                     .disabled(shopName.isEmpty)
@@ -346,19 +358,20 @@ struct EditBeverageView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("基本信息") {
-                    TextField("店名", text: $shopName)
-                    DatePicker("日期", selection: $date, displayedComponents: .date)
+                Section("beverage.section.basic_info".localized()) {
+                    TextField("beverage.shop_name_placeholder".localized(), text: $shopName)
+                    DatePicker("beverage.date_label".localized(), selection: $date, displayedComponents: .date)
+                        .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
                 }
                 
-                Section("照片") {
+                Section("beverage.section.photos".localized()) {
                     MultiplePhotosPickerView(photosData: $photosData)
                 }
                 
-                Section("评分") {
+                Section("beverage.section.rating".localized()) {
                     VStack(spacing: 12) {
                         HStack {
-                            Text("选择评分 (1-10分)")
+                            Text("beverage.rating_prompt".localized())
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                             Spacer()
@@ -368,22 +381,22 @@ struct EditBeverageView: View {
                     .padding(.vertical, 8)
                 }
                 
-                Section("备注") {
-                    TextField("添加备注（可选）", text: $notes, axis: .vertical)
+                Section("beverage.section.notes".localized()) {
+                    TextField("beverage.notes_placeholder".localized(), text: $notes, axis: .vertical)
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("编辑饮品")
+            .navigationTitle("beverage.edit.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") {
+                    Button("common.cancel".localized()) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button("common.save".localized()) {
                         saveChanges()
                     }
                     .disabled(shopName.isEmpty)

@@ -11,17 +11,28 @@ import SwiftData
 struct RestaurantView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Restaurant.date, order: .reverse) private var restaurants: [Restaurant]
+    @ObservedObject var localizationManager = LocalizationManager.shared
     @State private var showingAddSheet = false
     @State private var searchText = ""
     @State private var selectedRatingFilter: RatingFilter = .all
     @State private var showingFilterSheet = false
     
     enum RatingFilter: String, CaseIterable {
-        case all = "全部"
-        case highRated = "高分 (8-10分)"
-        case mediumRated = "中等 (5-7分)"
-        case lowRated = "低分 (1-4分)"
-        case unrated = "未评分"
+        case all = "all"
+        case highRated = "high"
+        case mediumRated = "medium"
+        case lowRated = "low"
+        case unrated = "unrated"
+        
+        var localizedName: String {
+            switch self {
+            case .all: return "restaurant.filter.all".localized()
+            case .highRated: return "restaurant.filter.high".localized()
+            case .mediumRated: return "restaurant.filter.medium".localized()
+            case .lowRated: return "restaurant.filter.low".localized()
+            case .unrated: return "restaurant.filter.unrated".localized()
+            }
+        }
         
         func matches(_ rating: Int) -> Bool {
             switch self {
@@ -53,8 +64,8 @@ struct RestaurantView: View {
                 if restaurants.isEmpty {
                     EmptyStateView(
                         icon: "fork.knife",
-                        title: "还没有美食记录",
-                        subtitle: "记录你们一起享用的每一餐"
+                        title: "restaurant.empty.title".localized(),
+                        subtitle: "restaurant.empty.subtitle".localized()
                     )
                 } else {
                     VStack(spacing: 0) {
@@ -63,7 +74,7 @@ struct RestaurantView: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
                                     FilterChip(
-                                        title: selectedRatingFilter.rawValue,
+                                        title: selectedRatingFilter.localizedName,
                                         isSelected: true
                                     ) {
                                         selectedRatingFilter = .all
@@ -78,8 +89,8 @@ struct RestaurantView: View {
                         if filteredRestaurants.isEmpty {
                             EmptyStateView(
                                 icon: "magnifyingglass",
-                                title: "没有找到结果",
-                                subtitle: "试试其他搜索词或筛选条件"
+                                title: "common.search.empty.title".localized(),
+                                subtitle: "common.search.empty.subtitle".localized()
                             )
                         } else {
                             List {
@@ -97,8 +108,8 @@ struct RestaurantView: View {
                     }
                 }
             }
-            .navigationTitle("吃 🍽️")
-            .searchable(text: $searchText, prompt: "搜索餐厅、地点或备注")
+            .navigationTitle("restaurant.title".localized())
+            .searchable(text: $searchText, prompt: "restaurant.search_placeholder".localized())
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -146,14 +157,14 @@ struct FilterView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section("按评分筛选") {
+                Section("restaurant.filter.section".localized()) {
                     ForEach(RestaurantView.RatingFilter.allCases, id: \.self) { filter in
                         Button {
                             selectedRating = filter
                             dismiss()
                         } label: {
                             HStack {
-                                Text(filter.rawValue)
+                                Text(filter.localizedName)
                                     .foregroundStyle(.primary)
                                 Spacer()
                                 if selectedRating == filter {
@@ -165,11 +176,11 @@ struct FilterView: View {
                     }
                 }
             }
-            .navigationTitle("筛选")
+            .navigationTitle("restaurant.filter.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("完成") {
+                    Button("common.done".localized()) {
                         dismiss()
                     }
                 }
@@ -196,7 +207,7 @@ struct RestaurantRow: View {
                     
                     Spacer()
                     
-                    Text(restaurant.date, style: .date)
+                    Text(restaurant.date.formattedSimple())
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -233,9 +244,9 @@ struct RestaurantDetailView: View {
     var body: some View {
         List {
             Section {
-                DetailRow(icon: "fork.knife", label: "餐厅名称", value: restaurant.name)
-                DetailRow(icon: "location.fill", label: "地点", value: restaurant.location)
-                DetailRow(icon: "calendar", label: "日期", value: restaurant.date.formatted(date: .long, time: .omitted))
+                DetailRow(icon: "fork.knife", label: "restaurant.detail.name".localized(), value: restaurant.name)
+                DetailRow(icon: "location.fill", label: "restaurant.detail.location".localized(), value: restaurant.location)
+                DetailRow(icon: "calendar", label: "restaurant.detail.date".localized(), value: restaurant.date.formattedSimple())
                 
                 if restaurant.rating > 0 {
                     RatingRow(rating: restaurant.rating)
@@ -252,20 +263,20 @@ struct RestaurantDetailView: View {
             }
             
             if !restaurant.notes.isEmpty {
-                Section("备注") {
+                Section("restaurant.detail.notes".localized()) {
                     Text(restaurant.notes)
                         .foregroundStyle(.secondary)
                 }
             }
         }
-        .navigationTitle("餐厅详情")
+        .navigationTitle("restaurant.detail.title".localized())
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     showingEditSheet = true
                 } label: {
-                    Text("编辑")
+                    Text("common.edit".localized())
                         .foregroundStyle(.pink)
                 }
             }
@@ -290,20 +301,21 @@ struct AddRestaurantView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("基本信息") {
-                    TextField("餐厅名称", text: $name)
-                    TextField("地点", text: $location)
-                    DatePicker("日期", selection: $date, displayedComponents: .date)
+                Section("restaurant.section.basic_info".localized()) {
+                    TextField("restaurant.name_placeholder".localized(), text: $name)
+                    TextField("restaurant.location_placeholder".localized(), text: $location)
+                    DatePicker("restaurant.date_label".localized(), selection: $date, displayedComponents: .date)
+                        .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
                 }
                 
-                Section("照片") {
+                Section("restaurant.section.photos".localized()) {
                     MultiplePhotosPickerView(photosData: $photosData)
                 }
                 
-                Section("评分") {
+                Section("restaurant.section.rating".localized()) {
                     VStack(spacing: 12) {
                         HStack {
-                            Text("选择评分 (1-10分)")
+                            Text("restaurant.rating_prompt".localized())
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                             Spacer()
@@ -313,22 +325,22 @@ struct AddRestaurantView: View {
                     .padding(.vertical, 8)
                 }
                 
-                Section("备注") {
-                    TextField("添加备注（可选）", text: $notes, axis: .vertical)
+                Section("restaurant.section.notes".localized()) {
+                    TextField("restaurant.notes_placeholder".localized(), text: $notes, axis: .vertical)
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("添加餐厅")
+            .navigationTitle("restaurant.add.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") {
+                    Button("common.cancel".localized()) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button("common.save".localized()) {
                         saveRestaurant()
                     }
                     .disabled(name.isEmpty || location.isEmpty)
@@ -360,20 +372,21 @@ struct EditRestaurantView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("基本信息") {
-                    TextField("餐厅名称", text: $name)
-                    TextField("地点", text: $location)
-                    DatePicker("日期", selection: $date, displayedComponents: .date)
+                Section("restaurant.section.basic_info".localized()) {
+                    TextField("restaurant.name_placeholder".localized(), text: $name)
+                    TextField("restaurant.location_placeholder".localized(), text: $location)
+                    DatePicker("restaurant.date_label".localized(), selection: $date, displayedComponents: .date)
+                        .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
                 }
                 
-                Section("照片") {
+                Section("restaurant.section.photos".localized()) {
                     MultiplePhotosPickerView(photosData: $photosData)
                 }
                 
-                Section("评分") {
+                Section("restaurant.section.rating".localized()) {
                     VStack(spacing: 12) {
                         HStack {
-                            Text("选择评分 (1-10分)")
+                            Text("restaurant.rating_prompt".localized())
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                             Spacer()
@@ -383,22 +396,22 @@ struct EditRestaurantView: View {
                     .padding(.vertical, 8)
                 }
                 
-                Section("备注") {
-                    TextField("添加备注（可选）", text: $notes, axis: .vertical)
+                Section("restaurant.section.notes".localized()) {
+                    TextField("restaurant.notes_placeholder".localized(), text: $notes, axis: .vertical)
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("编辑餐厅")
+            .navigationTitle("restaurant.edit.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") {
+                    Button("common.cancel".localized()) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button("common.save".localized()) {
                         saveChanges()
                     }
                     .disabled(name.isEmpty || location.isEmpty)

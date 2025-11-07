@@ -127,12 +127,12 @@ struct RatingPicker: View {
             
             // Numeric rating display
             if rating > 0 {
-                Text("\(rating) 分")
+                Text(String(format: "rating.points".localized(), rating))
                     .font(.title2)
                     .fontWeight(.semibold)
                     .foregroundStyle(.pink)
             } else {
-                Text("未评分")
+                Text("rating.unrated".localized())
                     .font(.title3)
                     .foregroundStyle(.secondary)
             }
@@ -163,7 +163,7 @@ struct RatingPicker: View {
                         rating = 0
                     }
                 } label: {
-                    Text("清除评分")
+                    Text("rating.clear".localized())
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -183,7 +183,7 @@ struct RatingRow: View {
                 .frame(width: 24)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text("评分")
+                Text("rating.label".localized())
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 StarRatingView(rating: rating)

@@ -75,7 +75,7 @@ struct MultiplePhotosPickerView: View {
                             .font(.system(size: 40))
                             .foregroundStyle(.pink.opacity(0.5))
                         
-                        Text("添加照片 (最多\(maxPhotos)张)")
+                        Text(String(format: "photo.add_photos".localized(), maxPhotos))
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
@@ -101,15 +101,15 @@ struct MultiplePhotosPickerView: View {
                 selectedItems = []
             }
         }
-        .alert("删除照片", isPresented: $showingDeleteAlert) {
-            Button("取消", role: .cancel) { }
-            Button("删除", role: .destructive) {
+        .alert("photo.delete.title".localized(), isPresented: $showingDeleteAlert) {
+            Button("alert.cancel".localized(), role: .cancel) { }
+            Button("photo.delete.confirm".localized(), role: .destructive) {
                 if let index = photoToDelete {
                     photosData.remove(at: index)
                 }
             }
         } message: {
-            Text("确定要删除这张照片吗？")
+            Text("photo.delete.message".localized())
         }
     }
     
@@ -157,7 +157,7 @@ struct PhotoCarouselView: View {
             if photosData.count > 1 {
                 HStack {
                     Spacer()
-                    Text("\(photosData.count) 张照片")
+                    Text(String(format: "photo.count".localized(), photosData.count))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Spacer()
@@ -233,7 +233,7 @@ struct PhotoGalleryView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("完成") {
+                    Button("photo.gallery.done".localized()) {
                         dismiss()
                     }
                     .foregroundStyle(.white)

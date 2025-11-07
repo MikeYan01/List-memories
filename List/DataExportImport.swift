@@ -131,7 +131,7 @@ class DataManager {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd_HHmmss"
         let dateString = dateFormatter.string(from: Date())
-        let fileName = "吃喝玩乐打卡_\(dateString).json"
+        let fileName = "\("export.filename_prefix".localized())_\(dateString).json"
         
         let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
         try jsonData.write(to: tempURL)

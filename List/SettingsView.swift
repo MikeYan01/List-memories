@@ -16,8 +16,8 @@ struct SettingsView: View {
     @Query private var travels: [Travel]
     @Query private var recreations: [Recreation]
     
+    @ObservedObject var localizationManager = LocalizationManager.shared
     @State private var showingResetAlert = false
-    @State private var showingGlobalSearch = false
     @State private var showingExportShare = false
     @State private var showingImportPicker = false
     @State private var showingImportOptions = false
@@ -37,37 +37,38 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section {
-                    Button {
-                        showingGlobalSearch = true
-                    } label: {
-                        Label("全局搜索", systemImage: "magnifyingglass")
-                            .foregroundStyle(.pink)
+                Section("settings.language".localized()) {
+                    Picker("settings.app_language".localized(), selection: $localizationManager.currentLanguage) {
+                        ForEach(AppLanguage.allCases) { language in
+                            Text(language.displayName)
+                                .tag(language)
+                        }
                     }
+                    .pickerStyle(.menu)
                 }
                 
-                Section("统计") {
-                    StatRow(icon: "fork.knife", label: "餐厅", count: restaurants.count, color: .pink)
-                    StatRow(icon: "cup.and.saucer.fill", label: "饮品", count: beverages.count, color: .orange)
-                    StatRow(icon: "airplane.departure", label: "旅行", count: travels.count, color: .blue)
-                    StatRow(icon: "theatermasks.fill", label: "娱乐", count: recreations.count, color: .purple)
+                Section("settings.statistics".localized()) {
+                    StatRow(icon: "fork.knife", label: "settings.restaurant".localized(), count: restaurants.count, color: .pink)
+                    StatRow(icon: "cup.and.saucer.fill", label: "settings.beverage".localized(), count: beverages.count, color: .orange)
+                    StatRow(icon: "airplane.departure", label: "settings.travel".localized(), count: travels.count, color: .blue)
+                    StatRow(icon: "theatermasks.fill", label: "settings.recreation".localized(), count: recreations.count, color: .purple)
                     
                     HStack {
                         Image(systemName: "heart.fill")
                             .foregroundStyle(.red)
-                        Text("总记录数")
+                        Text("settings.total_records".localized())
                         Spacer()
                         Text("\(totalRecords)")
                             .fontWeight(.semibold)
                     }
                 }
                 
-                Section("数据管理") {
+                Section("settings.data_management".localized()) {
                     Button {
                         exportData()
                     } label: {
                         HStack {
-                            Label("导出数据", systemImage: "square.and.arrow.up")
+                            Label("settings.export_data".localized(), systemImage: "square.and.arrow.up")
                             if isExporting {
                                 Spacer()
                                 ProgressView()
@@ -80,7 +81,7 @@ struct SettingsView: View {
                         showingImportPicker = true
                     } label: {
                         HStack {
-                            Label("导入数据", systemImage: "square.and.arrow.down")
+                            Label("settings.import_data".localized(), systemImage: "square.and.arrow.down")
                             if isImporting {
                                 Spacer()
                                 ProgressView()
@@ -92,30 +93,27 @@ struct SettingsView: View {
                     Button(role: .destructive) {
                         showingResetAlert = true
                     } label: {
-                        Label("清空所有数据", systemImage: "trash.fill")
+                        Label("settings.clear_all_data".localized(), systemImage: "trash.fill")
                     }
                 }
                 
-                Section("关于") {
+                Section("settings.about".localized()) {
                     HStack {
-                        Text("版本")
+                        Text("settings.version".localized())
                         Spacer()
                         Text("1.0.0")
                             .foregroundStyle(.secondary)
                     }
                 }
             }
-            .navigationTitle("设置")
-            .alert("清空所有数据", isPresented: $showingResetAlert) {
-                Button("取消", role: .cancel) { }
-                Button("确认清空", role: .destructive) {
+            .navigationTitle("settings.title".localized())
+            .alert("alert.clear_data.title".localized(), isPresented: $showingResetAlert) {
+                Button("alert.cancel".localized(), role: .cancel) { }
+                Button("alert.clear_data.confirm".localized(), role: .destructive) {
                     clearAllData()
                 }
             } message: {
-                Text("此操作将删除所有记录，无法恢复。确定要继续吗？")
-            }
-            .sheet(isPresented: $showingGlobalSearch) {
-                GlobalSearchView()
+                Text("alert.clear_data.message".localized())
             }
             .sheet(isPresented: $showingImportOptions) {
                 ImportOptionsView(
@@ -142,13 +140,13 @@ struct SettingsView: View {
             .sheet(item: $exportURL) { url in
                 ShareSheet(items: [url])
             }
-            .alert("导入完成", isPresented: $showingImportAlert) {
-                Button("确定", role: .cancel) { }
+            .alert("import.complete.title".localized(), isPresented: $showingImportAlert) {
+                Button("alert.confirm".localized(), role: .cancel) { }
             } message: {
                 if let result = importResult {
-                    Text("成功导入 \(result.totalImported) 条记录\n餐厅: \(result.restaurants)\n饮品: \(result.beverages)\n旅行: \(result.travels)\n娱乐: \(result.recreations)")
+                    Text(String(format: "import.complete.message".localized(), result.totalImported, result.restaurants, result.beverages, result.travels, result.recreations))
                 } else if let error = importError {
-                    Text("导入失败: \(error.localizedDescription)")
+                    Text(String(format: "import.error.message".localized(), error.localizedDescription))
                 }
             }
         }
@@ -250,7 +248,7 @@ struct ImportOptionsView: View {
                             VStack(alignment: .leading) {
                                 Text(url.lastPathComponent)
                                     .font(.subheadline)
-                                Text("JSON 文件")
+                                Text("import.file_type".localized())
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -259,27 +257,27 @@ struct ImportOptionsView: View {
                 }
                 
                 Section {
-                    Toggle("替换现有数据", isOn: $replaceExisting)
+                    Toggle("import.replace_existing".localized(), isOn: $replaceExisting)
                 } footer: {
                     if replaceExisting {
-                        Text("将删除所有现有数据并导入新数据")
+                        Text("import.replace_footer_warning".localized())
                             .foregroundStyle(.red)
                     } else {
-                        Text("新数据将添加到现有数据中")
+                        Text("import.add_footer".localized())
                     }
                 }
             }
-            .navigationTitle("导入选项")
+            .navigationTitle("import.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") {
+                    Button("alert.cancel".localized()) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("导入") {
+                    Button("import.button".localized()) {
                         dismiss()
                         onImport()
                     }

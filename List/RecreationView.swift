@@ -11,6 +11,7 @@ import SwiftData
 struct RecreationView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Recreation.date, order: .reverse) private var recreations: [Recreation]
+    @ObservedObject var localizationManager = LocalizationManager.shared
     @State private var showingAddSheet = false
     @State private var selectedFilter: RecreationType?
     @State private var searchText = ""
@@ -33,8 +34,8 @@ struct RecreationView: View {
                 if recreations.isEmpty {
                     EmptyStateView(
                         icon: "theatermasks.fill",
-                        title: "还没有娱乐记录",
-                        subtitle: "记录你们一起欢乐的每个瞬间"
+                        title: "recreation.empty.title".localized(),
+                        subtitle: "recreation.empty.subtitle".localized()
                     )
                 } else {
                     VStack(spacing: 0) {
@@ -42,14 +43,14 @@ struct RecreationView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 12) {
                                 FilterChip(
-                                    title: "全部",
+                                    title: "recreation.filter.all".localized(),
                                     isSelected: selectedFilter == nil,
                                     action: { selectedFilter = nil }
                                 )
                                 
                                 ForEach(RecreationType.allCases, id: \.self) { type in
                                     FilterChip(
-                                        title: type.rawValue,
+                                        title: type.localizedName,
                                         isSelected: selectedFilter == type,
                                         action: { selectedFilter = type }
                                     )
@@ -63,8 +64,8 @@ struct RecreationView: View {
                         if filteredRecreations.isEmpty {
                             EmptyStateView(
                                 icon: "magnifyingglass",
-                                title: "没有找到结果",
-                                subtitle: "试试其他搜索词或筛选条件"
+                                title: "common.search.empty.title".localized(),
+                                subtitle: "common.search.empty.subtitle".localized()
                             )
                         } else {
                             List {
@@ -82,8 +83,8 @@ struct RecreationView: View {
                     }
                 }
             }
-            .navigationTitle("乐 🎭")
-            .searchable(text: $searchText, prompt: "搜索活动名称、地点或备注")
+            .navigationTitle("recreation.title".localized())
+            .searchable(text: $searchText, prompt: "recreation.search_placeholder".localized())
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -134,7 +135,7 @@ struct RecreationRow: View {
                     Image(systemName: typeIcon)
                         .foregroundStyle(.pink)
                     
-                    Text(recreation.type.rawValue)
+                    Text(recreation.type.localizedName)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 8)
@@ -144,7 +145,7 @@ struct RecreationRow: View {
                     
                     Spacer()
                     
-                    Text(recreation.date, style: .date)
+                    Text(recreation.date.formattedSimple())
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -192,14 +193,14 @@ struct RecreationDetailView: View {
     var body: some View {
         List {
             Section {
-                DetailRow(icon: typeIcon, label: "类型", value: recreation.type.rawValue)
-                DetailRow(icon: "star.fill", label: "名称", value: recreation.name)
+                DetailRow(icon: typeIcon, label: "recreation.detail.type".localized(), value: recreation.type.localizedName)
+                DetailRow(icon: "star.fill", label: "recreation.detail.name".localized(), value: recreation.name)
                 
                 if !recreation.location.isEmpty {
-                    DetailRow(icon: "location.fill", label: "地点", value: recreation.location)
+                    DetailRow(icon: "location.fill", label: "recreation.detail.location".localized(), value: recreation.location)
                 }
                 
-                DetailRow(icon: "calendar", label: "日期", value: recreation.date.formatted(date: .long, time: .omitted))
+                DetailRow(icon: "calendar", label: "recreation.detail.date".localized(), value: recreation.date.formattedSimple())
             }
             
             // Photo carousel
@@ -212,20 +213,20 @@ struct RecreationDetailView: View {
             }
             
             if !recreation.notes.isEmpty {
-                Section("备注") {
+                Section("recreation.detail.notes".localized()) {
                     Text(recreation.notes)
                         .foregroundStyle(.secondary)
                 }
             }
         }
-        .navigationTitle("娱乐详情")
+        .navigationTitle("recreation.detail.title".localized())
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     showingEditSheet = true
                 } label: {
-                    Text("编辑")
+                    Text("common.edit".localized())
                         .foregroundStyle(.pink)
                 }
             }
@@ -267,45 +268,46 @@ struct AddRecreationView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("类型") {
-                    Picker("选择类型", selection: $type) {
+                Section("recreation.section.type".localized()) {
+                    Picker("recreation.type_picker".localized(), selection: $type) {
                         ForEach(RecreationType.allCases, id: \.self) { type in
-                            Text(type.rawValue).tag(type)
+                            Text(type.localizedName).tag(type)
                         }
                     }
                     .pickerStyle(.segmented)
                 }
                 
-                Section("基本信息") {
+                Section("recreation.section.basic_info".localized()) {
                     TextField(namePlaceholder, text: $name)
                     
                     if showsLocation {
-                        TextField(requiresLocation ? "地点" : "地点（可选）", text: $location)
+                        TextField(requiresLocation ? "recreation.location_required".localized() : "recreation.location_optional".localized(), text: $location)
                     }
                     
-                    DatePicker("日期", selection: $date, displayedComponents: .date)
+                    DatePicker("recreation.date_label".localized(), selection: $date, displayedComponents: .date)
+                        .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
                 }
                 
-                Section("照片") {
+                Section("recreation.section.photos".localized()) {
                     MultiplePhotosPickerView(photosData: $photosData)
                 }
                 
-                Section("备注") {
-                    TextField("添加备注（可选）", text: $notes, axis: .vertical)
+                Section("recreation.section.notes".localized()) {
+                    TextField("recreation.notes_placeholder".localized(), text: $notes, axis: .vertical)
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("添加娱乐活动")
+            .navigationTitle("recreation.add.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") {
+                    Button("common.cancel".localized()) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button("common.save".localized()) {
                         saveRecreation()
                     }
                     .disabled(name.isEmpty || (requiresLocation && location.isEmpty))
@@ -344,55 +346,56 @@ struct EditRecreationView: View {
     
     var namePlaceholder: String {
         switch type {
-        case .outdoor: return "活动名称（如：迪士尼）"
-        case .movie: return "电影名称"
-        case .concert: return "演唱会名称"
-        case .game: return "游戏名称"
+        case .outdoor: return "recreation.name_placeholder.outdoor".localized()
+        case .movie: return "recreation.name_placeholder.movie".localized()
+        case .concert: return "recreation.name_placeholder.concert".localized()
+        case .game: return "recreation.name_placeholder.game".localized()
         }
     }
     
     var body: some View {
         NavigationStack {
             Form {
-                Section("类型") {
-                    Picker("选择类型", selection: $type) {
+                Section("recreation.section.type".localized()) {
+                    Picker("recreation.type_picker".localized(), selection: $type) {
                         ForEach(RecreationType.allCases, id: \.self) { type in
-                            Text(type.rawValue).tag(type)
+                            Text(type.localizedName).tag(type)
                         }
                     }
                     .pickerStyle(.segmented)
                 }
                 
-                Section("基本信息") {
+                Section("recreation.section.basic_info".localized()) {
                     TextField(namePlaceholder, text: $name)
                     
                     if showsLocation {
-                        TextField(requiresLocation ? "地点" : "地点（可选）", text: $location)
+                        TextField(requiresLocation ? "recreation.location_required".localized() : "recreation.location_optional".localized(), text: $location)
                     }
                     
-                    DatePicker("日期", selection: $date, displayedComponents: .date)
+                    DatePicker("recreation.date_label".localized(), selection: $date, displayedComponents: .date)
+                        .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
                 }
                 
-                Section("照片") {
+                Section("recreation.section.photos".localized()) {
                     MultiplePhotosPickerView(photosData: $photosData)
                 }
                 
-                Section("备注") {
-                    TextField("添加备注（可选）", text: $notes, axis: .vertical)
+                Section("recreation.section.notes".localized()) {
+                    TextField("recreation.notes_placeholder".localized(), text: $notes, axis: .vertical)
                         .lineLimit(3...6)
                 }
             }
-            .navigationTitle("编辑娱乐活动")
+            .navigationTitle("recreation.edit.title".localized())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") {
+                    Button("common.cancel".localized()) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("保存") {
+                    Button("common.save".localized()) {
                         saveChanges()
                     }
                     .disabled(name.isEmpty || (requiresLocation && location.isEmpty))
