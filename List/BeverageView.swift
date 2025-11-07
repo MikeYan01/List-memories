@@ -192,13 +192,7 @@ struct BeverageRow: View {
     let beverage: Beverage
     
     var body: some View {
-        HStack(spacing: 12) {
-            // Photo thumbnail
-            if !beverage.photosData.isEmpty {
-                PhotoThumbnail(photosData: beverage.photosData)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text(beverage.shopName)
                         .font(.headline)
@@ -222,7 +216,6 @@ struct BeverageRow: View {
                         .lineLimit(2)
                 }
             }
-        }
         .padding(.vertical, 4)
     }
 }

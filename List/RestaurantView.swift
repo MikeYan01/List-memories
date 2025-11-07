@@ -16,6 +16,13 @@ struct RestaurantView: View {
     @State private var searchText = ""
     @State private var selectedRatingFilter: RatingFilter = .all
     @State private var showingFilterSheet = false
+    @State private var selectedTag: String?
+    
+    // Get all unique tags from restaurants
+    var allTags: [String] {
+        let tagSet = Set(restaurants.flatMap { $0.tags })
+        return Array(tagSet).sorted()
+    }
     
     enum RatingFilter: String, CaseIterable {
         case all = "all"
@@ -50,11 +57,14 @@ struct RestaurantView: View {
             let matchesSearch = searchText.isEmpty ||
                 restaurant.name.localizedCaseInsensitiveContains(searchText) ||
                 restaurant.location.localizedCaseInsensitiveContains(searchText) ||
-                restaurant.notes.localizedCaseInsensitiveContains(searchText)
+                restaurant.notes.localizedCaseInsensitiveContains(searchText) ||
+                restaurant.tags.contains(where: { $0.localizedCaseInsensitiveContains(searchText) })
             
             let matchesRating = selectedRatingFilter.matches(restaurant.rating)
             
-            return matchesSearch && matchesRating
+            let matchesTag = selectedTag == nil || restaurant.tags.contains(selectedTag!)
+            
+            return matchesSearch && matchesRating && matchesTag
         }
     }
     
@@ -70,20 +80,50 @@ struct RestaurantView: View {
                 } else {
                     VStack(spacing: 0) {
                         // Filter chips
-                        if selectedRatingFilter != .all {
+                        if selectedRatingFilter != .all || selectedTag != nil {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
-                                    FilterChip(
-                                        title: selectedRatingFilter.localizedName,
-                                        isSelected: true
-                                    ) {
-                                        selectedRatingFilter = .all
+                                    if selectedRatingFilter != .all {
+                                        FilterChip(
+                                            title: selectedRatingFilter.localizedName,
+                                            isSelected: true
+                                        ) {
+                                            selectedRatingFilter = .all
+                                        }
+                                    }
+                                    
+                                    if let tag = selectedTag {
+                                        FilterChip(
+                                            title: tag,
+                                            isSelected: true
+                                        ) {
+                                            selectedTag = nil
+                                        }
                                     }
                                 }
                                 .padding(.horizontal)
                                 .padding(.vertical, 8)
                             }
                             .background(.ultraThinMaterial)
+                        }
+                        
+                        // Tag chips for quick filtering
+                        if !allTags.isEmpty && selectedTag == nil {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    ForEach(allTags, id: \.self) { tag in
+                                        FilterChip(
+                                            title: tag,
+                                            isSelected: false
+                                        ) {
+                                            selectedTag = tag
+                                        }
+                                    }
+                                }
+                                .padding(.horizontal)
+                                .padding(.vertical, 8)
+                            }
+                            .background(Color(.systemGroupedBackground))
                         }
                         
                         if filteredRestaurants.isEmpty {
@@ -193,13 +233,7 @@ struct RestaurantRow: View {
     let restaurant: Restaurant
     
     var body: some View {
-        HStack(spacing: 12) {
-            // Photo thumbnail
-            if !restaurant.photosData.isEmpty {
-                PhotoThumbnail(photosData: restaurant.photosData)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text(restaurant.name)
                         .font(.headline)
@@ -231,9 +265,26 @@ struct RestaurantRow: View {
                         .foregroundStyle(.secondary)
                         .lineLimit(2)
                 }
+                
+                // Display tags
+                if !restaurant.tags.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 6) {
+                            ForEach(restaurant.tags, id: \.self) { tag in
+                                Text(tag)
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color.pink.opacity(0.15))
+                                    .foregroundStyle(.pink)
+                                    .clipShape(Capsule())
+                            }
+                        }
+                    }
+                }
             }
-        }
-        .padding(.vertical, 4)
+            .padding(.vertical, 4)
     }
 }
 
@@ -250,6 +301,34 @@ struct RestaurantDetailView: View {
                 
                 if restaurant.rating > 0 {
                     RatingRow(rating: restaurant.rating)
+                }
+                
+                // Display tags
+                if !restaurant.tags.isEmpty {
+                    HStack(spacing: 12) {
+                        Image(systemName: "tag.fill")
+                            .foregroundStyle(.pink)
+                            .frame(width: 24)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("restaurant.tags".localized())
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            FlowLayout(spacing: 6) {
+                                ForEach(restaurant.tags, id: \.self) { tag in
+                                    Text(tag)
+                                        .font(.caption)
+                                        .fontWeight(.medium)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 5)
+                                        .background(Color.pink.opacity(0.15))
+                                        .foregroundStyle(.pink)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
                 }
             }
             
@@ -297,6 +376,8 @@ struct AddRestaurantView: View {
     @State private var rating = 0
     @State private var notes = ""
     @State private var photosData: [Data] = []
+    @State private var tags: [String] = []
+    @State private var newTagText = ""
     
     var body: some View {
         NavigationStack {
@@ -328,6 +409,56 @@ struct AddRestaurantView: View {
                 Section("restaurant.section.notes".localized()) {
                     TextField("restaurant.notes_placeholder".localized(), text: $notes, axis: .vertical)
                         .lineLimit(3...6)
+                }
+                
+                Section("restaurant.section.tags".localized()) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        // Display existing tags
+                        if !tags.isEmpty {
+                            FlowLayout(spacing: 8) {
+                                ForEach(Array(tags.enumerated()), id: \.offset) { index, tag in
+                                    HStack(spacing: 4) {
+                                        Text(tag)
+                                            .font(.subheadline)
+                                        Button {
+                                            tags.remove(at: index)
+                                        } label: {
+                                            Image(systemName: "xmark.circle.fill")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        .buttonStyle(.borderless)
+                                    }
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(Color.pink.opacity(0.15))
+                                    .foregroundStyle(.pink)
+                                    .clipShape(Capsule())
+                                }
+                            }
+                        }
+                        
+                        // Add new tag
+                        HStack {
+                            TextField("restaurant.add_tag_placeholder".localized(), text: $newTagText)
+                                .textInputAutocapitalization(.words)
+                                .submitLabel(.done)
+                                .onSubmit {
+                                    addTag()
+                                }
+                            
+                            if !newTagText.isEmpty {
+                                Button(action: {
+                                    addTag()
+                                }) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundStyle(.pink)
+                                }
+                                .buttonStyle(.borderless)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
                 }
             }
             .navigationTitle("restaurant.add.title".localized())
@@ -350,9 +481,16 @@ struct AddRestaurantView: View {
     }
     
     private func saveRestaurant() {
-        let restaurant = Restaurant(name: name, location: location, date: date, rating: rating, notes: notes, photosData: photosData)
+        let restaurant = Restaurant(name: name, location: location, date: date, rating: rating, notes: notes, photosData: photosData, tags: tags)
         modelContext.insert(restaurant)
         dismiss()
+    }
+    
+    private func addTag() {
+        let trimmed = newTagText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, !tags.contains(trimmed) else { return }
+        tags.append(trimmed)
+        newTagText = ""
     }
 }
 
@@ -368,6 +506,8 @@ struct EditRestaurantView: View {
     @State private var rating = 0
     @State private var notes = ""
     @State private var photosData: [Data] = []
+    @State private var tags: [String] = []
+    @State private var newTagText = ""
     
     var body: some View {
         NavigationStack {
@@ -399,6 +539,56 @@ struct EditRestaurantView: View {
                 Section("restaurant.section.notes".localized()) {
                     TextField("restaurant.notes_placeholder".localized(), text: $notes, axis: .vertical)
                         .lineLimit(3...6)
+                }
+                
+                Section("restaurant.section.tags".localized()) {
+                    VStack(alignment: .leading, spacing: 12) {
+                        // Display existing tags
+                        if !tags.isEmpty {
+                            FlowLayout(spacing: 8) {
+                                ForEach(Array(tags.enumerated()), id: \.offset) { index, tag in
+                                    HStack(spacing: 4) {
+                                        Text(tag)
+                                            .font(.subheadline)
+                                        Button {
+                                            tags.remove(at: index)
+                                        } label: {
+                                            Image(systemName: "xmark.circle.fill")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                        .buttonStyle(.borderless)
+                                    }
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(Color.pink.opacity(0.15))
+                                    .foregroundStyle(.pink)
+                                    .clipShape(Capsule())
+                                }
+                            }
+                        }
+                        
+                        // Add new tag
+                        HStack {
+                            TextField("restaurant.add_tag_placeholder".localized(), text: $newTagText)
+                                .textInputAutocapitalization(.words)
+                                .submitLabel(.done)
+                                .onSubmit {
+                                    addTag()
+                                }
+                            
+                            if !newTagText.isEmpty {
+                                Button(action: {
+                                    addTag()
+                                }) {
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundStyle(.pink)
+                                }
+                                .buttonStyle(.borderless)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 4)
                 }
             }
             .navigationTitle("restaurant.edit.title".localized())
@@ -424,6 +614,7 @@ struct EditRestaurantView: View {
                 rating = restaurant.rating
                 notes = restaurant.notes
                 photosData = restaurant.photosData
+                tags = restaurant.tags
             }
         }
     }
@@ -435,8 +626,16 @@ struct EditRestaurantView: View {
         restaurant.rating = rating
         restaurant.notes = notes
         restaurant.photosData = photosData
+        restaurant.tags = tags
         try? modelContext.save()
         dismiss()
+    }
+    
+    private func addTag() {
+        let trimmed = newTagText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, !tags.contains(trimmed) else { return }
+        tags.append(trimmed)
+        newTagText = ""
     }
 }
 

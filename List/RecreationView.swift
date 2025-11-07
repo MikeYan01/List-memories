@@ -124,13 +124,7 @@ struct RecreationRow: View {
     }
     
     var body: some View {
-        HStack(spacing: 12) {
-            // Photo thumbnail
-            if !recreation.photosData.isEmpty {
-                PhotoThumbnail(photosData: recreation.photosData)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Image(systemName: typeIcon)
                         .foregroundStyle(.pink)
@@ -172,7 +166,6 @@ struct RecreationRow: View {
                         .lineLimit(2)
                 }
             }
-        }
         .padding(.vertical, 4)
     }
 }

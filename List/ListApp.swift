@@ -11,31 +11,58 @@ import SwiftData
 @main
 struct ListApp: App {
     var sharedModelContainer: ModelContainer = {
+        // Define the current schema
         let schema = Schema([
             Restaurant.self,
             Beverage.self,
             Travel.self,
             Recreation.self,
         ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        
+        // Configure model with CloudKit
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: false,
+            allowsSave: true,
+            cloudKitDatabase: .automatic
+        )
 
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            // Try to create container with current schema
+            let container = try ModelContainer(
+                for: schema,
+                configurations: [modelConfiguration]
+            )
+            print("✅ ModelContainer initialized successfully")
+            return container
         } catch {
-            // If there's a migration error, try to recreate the container
             print("⚠️ ModelContainer error: \(error)")
-            print("🔄 Attempting to reset and recreate...")
+            print("🔄 Attempting migration by recreating container...")
             
-            // Try to delete the old store and create a fresh one
-            let url = URL.applicationSupportDirectory.appending(path: "default.store")
-            try? FileManager.default.removeItem(at: url)
+            // Migration strategy: Delete old database and create fresh one
+            // Note: This will lose existing data. For production, use proper versioned schema migration
+            let fileManager = FileManager.default
+            if let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
+                let storeURL = appSupport.appendingPathComponent("default.store")
+                let shmURL = appSupport.appendingPathComponent("default.store-shm")
+                let walURL = appSupport.appendingPathComponent("default.store-wal")
+                
+                try? fileManager.removeItem(at: storeURL)
+                try? fileManager.removeItem(at: shmURL)
+                try? fileManager.removeItem(at: walURL)
+                
+                print("🗑️ Removed old database files")
+            }
             
             do {
-                let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+                let container = try ModelContainer(
+                    for: schema,
+                    configurations: [modelConfiguration]
+                )
                 print("✅ ModelContainer recreated successfully")
                 return container
             } catch {
-                fatalError("Could not create ModelContainer even after reset: \(error)")
+                fatalError("Could not create ModelContainer even after cleanup: \(error)")
             }
         }
     }()

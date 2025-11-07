@@ -157,11 +157,14 @@
 "restaurant.section.photos" = "Photos";
 "restaurant.section.rating" = "Rating";
 "restaurant.section.notes" = "Notes";
+"restaurant.section.tags" = "Tags";
 "restaurant.name_placeholder" = "Restaurant Name";
 "restaurant.location_placeholder" = "Location";
 "restaurant.date_label" = "Date";
 "restaurant.rating_prompt" = "Select rating (1-10)";
 "restaurant.notes_placeholder" = "Add notes (optional)";
+"restaurant.tags" = "Tags";
+"restaurant.add_tag_placeholder" = "Add tag (e.g., Japanese, Spicy)";
 
 // Shared Components
 "rating.label" = "Rating";

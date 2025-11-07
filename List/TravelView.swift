@@ -194,13 +194,7 @@ struct TravelRow: View {
     }
     
     var body: some View {
-        HStack(spacing: 12) {
-            // Photo thumbnail
-            if !travel.photosData.isEmpty {
-                PhotoThumbnail(photosData: travel.photosData)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text(travel.destination)
                         .font(.headline)
@@ -232,7 +226,6 @@ struct TravelRow: View {
                         .lineLimit(2)
                 }
             }
-        }
         .padding(.vertical, 4)
     }
 }

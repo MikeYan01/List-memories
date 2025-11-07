@@ -157,11 +157,14 @@
 "restaurant.section.photos" = "照片";
 "restaurant.section.rating" = "评分";
 "restaurant.section.notes" = "备注";
+"restaurant.section.tags" = "标签";
 "restaurant.name_placeholder" = "餐厅名称";
 "restaurant.location_placeholder" = "地点";
 "restaurant.date_label" = "日期";
 "restaurant.rating_prompt" = "选择评分 (1-10分)";
 "restaurant.notes_placeholder" = "添加备注（可选）";
+"restaurant.tags" = "标签";
+"restaurant.add_tag_placeholder" = "添加标签（如：日料、辣）";
 
 // Shared Components
 "rating.label" = "评分";

@@ -17,14 +17,16 @@ final class Restaurant {
     var rating: Int  // 0-10 points
     var notes: String
     @Attribute(.externalStorage) var photosData: [Data]
+    var tags: [String]  // Custom tags like "Japanese", "Italian", "Spicy", etc.
     
-    init(name: String, location: String, date: Date, rating: Int = 0, notes: String = "", photosData: [Data] = []) {
+    init(name: String, location: String, date: Date, rating: Int = 0, notes: String = "", photosData: [Data] = [], tags: [String] = []) {
         self.name = name
         self.location = location
         self.date = date
         self.rating = rating
         self.notes = notes
         self.photosData = photosData
+        self.tags = tags
     }
 }
 
