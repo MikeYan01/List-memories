@@ -108,7 +108,7 @@ struct RestaurantView: View {
                         }
                         
                         // Tag chips for quick filtering
-                        if !allTags.isEmpty && selectedTag == nil {
+                        if !allTags.isEmpty && selectedTag == nil && searchText.isEmpty {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 8) {
                                     ForEach(allTags, id: \.self) { tag in
@@ -149,7 +149,6 @@ struct RestaurantView: View {
                 }
             }
             .navigationTitle("restaurant.title".localized())
-            .searchable(text: $searchText, prompt: "restaurant.search_placeholder".localized())
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -170,6 +169,7 @@ struct RestaurantView: View {
                     }
                 }
             }
+            .searchable(text: $searchText, prompt: "restaurant.search_placeholder".localized())
             .sheet(isPresented: $showingAddSheet) {
                 AddRestaurantView()
             }

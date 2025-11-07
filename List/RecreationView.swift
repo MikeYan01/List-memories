@@ -42,18 +42,32 @@ struct RecreationView: View {
                         // Filter chips
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 12) {
-                                FilterChip(
-                                    title: "recreation.filter.all".localized(),
-                                    isSelected: selectedFilter == nil,
-                                    action: { selectedFilter = nil }
-                                )
+                                Button {
+                                    selectedFilter = nil
+                                } label: {
+                                    Text("recreation.filter.all".localized())
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(selectedFilter == nil ? Color.pink : Color.gray.opacity(0.2))
+                                        .foregroundStyle(selectedFilter == nil ? .white : .primary)
+                                        .clipShape(Capsule())
+                                }
                                 
                                 ForEach(RecreationType.allCases, id: \.self) { type in
-                                    FilterChip(
-                                        title: type.localizedName,
-                                        isSelected: selectedFilter == type,
-                                        action: { selectedFilter = type }
-                                    )
+                                    Button {
+                                        selectedFilter = type
+                                    } label: {
+                                        Text(type.localizedName)
+                                            .font(.subheadline)
+                                            .fontWeight(.medium)
+                                            .padding(.horizontal, 12)
+                                            .padding(.vertical, 6)
+                                            .background(selectedFilter == type ? Color.pink : Color.gray.opacity(0.2))
+                                            .foregroundStyle(selectedFilter == type ? .white : .primary)
+                                            .clipShape(Capsule())
+                                    }
                                 }
                             }
                             .padding(.horizontal)

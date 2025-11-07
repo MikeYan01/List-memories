@@ -107,15 +107,6 @@ struct SettingsView: View {
                         Label("settings.clear_all_data".localized(), systemImage: "trash.fill")
                     }
                 }
-                
-                Section("settings.about".localized()) {
-                    HStack {
-                        Text("settings.version".localized())
-                        Spacer()
-                        Text("1.0.0")
-                            .foregroundStyle(.secondary)
-                    }
-                }
             }
             .navigationTitle("settings.title".localized())
             .alert("alert.clear_data.title".localized(), isPresented: $showingResetAlert) {
