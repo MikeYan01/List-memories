@@ -149,6 +149,7 @@ struct RestaurantView: View {
                 }
             }
             .navigationTitle("restaurant.title".localized())
+            .searchable(text: $searchText, prompt: "restaurant.search_placeholder".localized())
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -169,7 +170,6 @@ struct RestaurantView: View {
                     }
                 }
             }
-            .searchable(text: $searchText, prompt: "restaurant.search_placeholder".localized())
             .sheet(isPresented: $showingAddSheet) {
                 AddRestaurantView()
             }
@@ -233,58 +233,71 @@ struct RestaurantRow: View {
     let restaurant: Restaurant
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text(restaurant.name)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                    
-                    Spacer()
-                    
-                    Text(restaurant.date.formattedSimple())
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+        VStack(alignment: .leading, spacing: 10) {
+            // Header: Name and Date
+            HStack(alignment: .top) {
+                Text(restaurant.name)
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
                 
-                HStack {
-                    Image(systemName: "location.fill")
-                        .font(.caption)
-                        .foregroundStyle(.pink)
-                    Text(restaurant.location)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+                Spacer()
                 
-                if restaurant.rating > 0 {
-                    StarRatingView(rating: restaurant.rating)
-                }
-                
-                if !restaurant.notes.isEmpty {
-                    Text(restaurant.notes)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                }
-                
-                // Display tags
-                if !restaurant.tags.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 6) {
-                            ForEach(restaurant.tags, id: \.self) { tag in
-                                Text(tag)
-                                    .font(.caption2)
-                                    .fontWeight(.medium)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(Color.pink.opacity(0.15))
-                                    .foregroundStyle(.pink)
-                                    .clipShape(Capsule())
-                            }
+                Text(restaurant.date.formattedSimple())
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+            }
+            
+            // Location
+            HStack(spacing: 6) {
+                Image(systemName: "location.fill")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.pink.opacity(0.8))
+                Text(restaurant.location)
+                    .font(.system(size: 14))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+            
+            // Rating
+            if restaurant.rating > 0 {
+                StarRatingView(rating: restaurant.rating)
+            }
+            
+            // Notes preview
+            if !restaurant.notes.isEmpty {
+                Text(restaurant.notes)
+                    .font(.system(size: 14))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .padding(.top, 2)
+            }
+            
+            // Tags
+            if !restaurant.tags.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(restaurant.tags, id: \.self) { tag in
+                            Text(tag)
+                                .font(.system(size: 12, weight: .medium))
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(
+                                    LinearGradient(
+                                        colors: [Color.pink.opacity(0.1), Color.pink.opacity(0.15)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .foregroundStyle(.pink)
+                                .clipShape(Capsule())
                         }
                     }
                 }
+                .padding(.top, 2)
             }
-            .padding(.vertical, 4)
+        }
+        .padding(.vertical, 8)
     }
 }
 

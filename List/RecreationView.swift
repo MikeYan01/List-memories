@@ -40,40 +40,42 @@ struct RecreationView: View {
                 } else {
                     VStack(spacing: 0) {
                         // Filter chips
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                Button {
-                                    selectedFilter = nil
-                                } label: {
-                                    Text("recreation.filter.all".localized())
-                                        .font(.subheadline)
-                                        .fontWeight(.medium)
-                                        .padding(.horizontal, 12)
-                                        .padding(.vertical, 6)
-                                        .background(selectedFilter == nil ? Color.pink : Color.gray.opacity(0.2))
-                                        .foregroundStyle(selectedFilter == nil ? .white : .primary)
-                                        .clipShape(Capsule())
-                                }
-                                
-                                ForEach(RecreationType.allCases, id: \.self) { type in
+                        if searchText.isEmpty {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
                                     Button {
-                                        selectedFilter = type
+                                        selectedFilter = nil
                                     } label: {
-                                        Text(type.localizedName)
+                                        Text("recreation.filter.all".localized())
                                             .font(.subheadline)
                                             .fontWeight(.medium)
                                             .padding(.horizontal, 12)
                                             .padding(.vertical, 6)
-                                            .background(selectedFilter == type ? Color.pink : Color.gray.opacity(0.2))
-                                            .foregroundStyle(selectedFilter == type ? .white : .primary)
+                                            .background(selectedFilter == nil ? Color.pink : Color.gray.opacity(0.2))
+                                            .foregroundStyle(selectedFilter == nil ? .white : .primary)
                                             .clipShape(Capsule())
                                     }
+                                    
+                                    ForEach(RecreationType.allCases, id: \.self) { type in
+                                        Button {
+                                            selectedFilter = type
+                                        } label: {
+                                            Text(type.localizedName)
+                                                .font(.subheadline)
+                                                .fontWeight(.medium)
+                                                .padding(.horizontal, 12)
+                                                .padding(.vertical, 6)
+                                                .background(selectedFilter == type ? Color.pink : Color.gray.opacity(0.2))
+                                                .foregroundStyle(selectedFilter == type ? .white : .primary)
+                                                .clipShape(Capsule())
+                                        }
+                                    }
                                 }
+                                .padding(.horizontal)
+                                .padding(.vertical, 12)
                             }
-                            .padding(.horizontal)
-                            .padding(.vertical, 12)
+                            .background(.ultraThinMaterial)
                         }
-                        .background(.ultraThinMaterial)
                         
                         if filteredRecreations.isEmpty {
                             EmptyStateView(
@@ -138,49 +140,64 @@ struct RecreationRow: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-                HStack {
+        VStack(alignment: .leading, spacing: 10) {
+            // Type badge and Date
+            HStack {
+                HStack(spacing: 6) {
                     Image(systemName: typeIcon)
-                        .foregroundStyle(.pink)
-                    
+                        .font(.system(size: 12))
+                        .foregroundStyle(.white)
                     Text(recreation.type.localizedName)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(.pink.opacity(0.1))
-                        .clipShape(Capsule())
-                    
-                    Spacer()
-                    
-                    Text(recreation.date.formattedSimple())
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(.white)
                 }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background(
+                    LinearGradient(
+                        colors: [Color.pink.opacity(0.8), Color.pink],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .clipShape(Capsule())
                 
-                Text(recreation.name)
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+                Spacer()
                 
-                if !recreation.location.isEmpty {
-                    HStack {
-                        Image(systemName: "location.fill")
-                            .font(.caption)
-                            .foregroundStyle(.pink)
-                        Text(recreation.location)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                
-                if !recreation.notes.isEmpty {
-                    Text(recreation.notes)
-                        .font(.caption)
+                Text(recreation.date.formattedSimple())
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+            }
+            
+            // Name
+            Text(recreation.name)
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(.primary)
+                .lineLimit(2)
+            
+            // Location
+            if !recreation.location.isEmpty {
+                HStack(spacing: 6) {
+                    Image(systemName: "location.fill")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.pink.opacity(0.8))
+                    Text(recreation.location)
+                        .font(.system(size: 14))
                         .foregroundStyle(.secondary)
-                        .lineLimit(2)
+                        .lineLimit(1)
                 }
             }
-        .padding(.vertical, 4)
+            
+            // Notes preview
+            if !recreation.notes.isEmpty {
+                Text(recreation.notes)
+                    .font(.system(size: 14))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .padding(.top, 2)
+            }
+        }
+        .padding(.vertical, 8)
     }
 }
 

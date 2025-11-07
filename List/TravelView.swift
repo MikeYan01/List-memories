@@ -194,39 +194,49 @@ struct TravelRow: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text(travel.destination)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
+        VStack(alignment: .leading, spacing: 10) {
+            // Header: Destination and Date/Status
+            HStack(alignment: .top) {
+                Text(travel.destination)
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text(displayDate.formattedSimple())
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
                     
-                    Spacer()
-                    
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text(displayDate.formattedSimple())
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        
-                        if isPlanned {
-                            Text("travel.status.planned".localized())
-                                .font(.caption2)
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(.blue)
-                                .clipShape(Capsule())
-                        }
+                    if isPlanned {
+                        Text("travel.status.planned".localized())
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color.blue.opacity(0.8), Color.blue],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .clipShape(Capsule())
                     }
                 }
-                
-                if !travel.notes.isEmpty {
-                    Text(travel.notes)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                }
             }
-        .padding(.vertical, 4)
+            
+            // Notes preview
+            if !travel.notes.isEmpty {
+                Text(travel.notes)
+                    .font(.system(size: 14))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .padding(.top, 2)
+            }
+        }
+        .padding(.vertical, 8)
     }
 }
 

@@ -192,31 +192,36 @@ struct BeverageRow: View {
     let beverage: Beverage
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    Text(beverage.shopName)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-                    
-                    Spacer()
-                    
-                    Text(beverage.date.formattedSimple())
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+        VStack(alignment: .leading, spacing: 10) {
+            // Header: Shop name and Date
+            HStack(alignment: .top) {
+                Text(beverage.shopName)
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
                 
-                if beverage.rating > 0 {
-                    StarRatingView(rating: beverage.rating)
-                }
+                Spacer()
                 
-                if !beverage.notes.isEmpty {
-                    Text(beverage.notes)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                }
+                Text(beverage.date.formattedSimple())
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
             }
-        .padding(.vertical, 4)
+            
+            // Rating
+            if beverage.rating > 0 {
+                StarRatingView(rating: beverage.rating)
+            }
+            
+            // Notes preview
+            if !beverage.notes.isEmpty {
+                Text(beverage.notes)
+                    .font(.system(size: 14))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                    .padding(.top, 2)
+            }
+        }
+        .padding(.vertical, 8)
     }
 }
 
