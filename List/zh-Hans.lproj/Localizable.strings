@@ -9,6 +9,15 @@
 "tab.travel" = "玩";
 "tab.recreation" = "乐";
 "tab.settings" = "设置";
+"tab.chronicle" = "时间线";
+
+// Chronicle View
+"chronicle.title" = "时间线 📖";
+"chronicle.empty.title" = "还没有记忆";
+"chronicle.empty.subtitle" = "你的时间线将在这里显示";
+"chronicle.search_placeholder" = "搜索记忆";
+"chronicle.filter.all" = "所有年份";
+"chronicle.events" = "条记录";
 
 // Settings View
 "settings.title" = "设置";
@@ -151,6 +160,9 @@
 "restaurant.detail.location" = "地点";
 "restaurant.detail.date" = "日期";
 "restaurant.detail.notes" = "备注";
+"restaurant.detail.checkin_count" = "打卡次数";
+"restaurant.detail.checkin_button" = "打卡";
+"restaurant.detail.times_visited" = "%d 次";
 "restaurant.add.title" = "添加餐厅";
 "restaurant.edit.title" = "编辑餐厅";
 "restaurant.section.basic_info" = "基本信息";
@@ -198,5 +210,7 @@
 "travel.destination_placeholder" = "目的地";
 "travel.planned_date_label" = "计划日期";
 "travel.actual_date_label" = "实际日期";
+"travel.actual_start_date_label" = "实际开始日期";
+"travel.actual_end_date_label" = "实际结束日期";
 "travel.completed_toggle" = "已完成旅行";
 "travel.notes_placeholder" = "添加备注（可选）";

@@ -12,6 +12,7 @@ struct TravelView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Travel.plannedDate, order: .reverse) private var travels: [Travel]
     @ObservedObject var localizationManager = LocalizationManager.shared
+    @Binding var showChronicle: Bool
     @State private var showingAddSheet = false
     @State private var searchText = ""
     @State private var selectedStatusFilter: StatusFilter = .all
@@ -60,55 +61,62 @@ struct TravelView: View {
                         title: "travel.empty.title".localized(),
                         subtitle: "travel.empty.subtitle".localized()
                     )
+                } else if filteredTravels.isEmpty {
+                    EmptyStateView(
+                        icon: "magnifyingglass",
+                        title: "common.search.empty.title".localized(),
+                        subtitle: "common.search.empty.subtitle".localized()
+                    )
                 } else {
-                    VStack(spacing: 0) {
+                    List {
                         // Filter chips
                         if selectedStatusFilter != .all {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
-                                    FilterChip(
-                                        title: selectedStatusFilter.localizedName,
-                                        isSelected: true
-                                    ) {
-                                        selectedStatusFilter = .all
+                            Section {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 8) {
+                                        FilterChip(
+                                            title: selectedStatusFilter.localizedName,
+                                            isSelected: true
+                                        ) {
+                                            selectedStatusFilter = .all
+                                        }
                                     }
                                 }
-                                .padding(.horizontal)
-                                .padding(.vertical, 8)
                             }
-                            .background(.ultraThinMaterial)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .listRowBackground(Color.clear)
                         }
                         
-                        if filteredTravels.isEmpty {
-                            EmptyStateView(
-                                icon: "magnifyingglass",
-                                title: "common.search.empty.title".localized(),
-                                subtitle: "common.search.empty.subtitle".localized()
-                            )
-                        } else {
-                            List {
-                                ForEach(filteredTravels) { travel in
-                                    NavigationLink {
-                                        TravelDetailView(travel: travel)
-                                    } label: {
-                                        TravelRow(travel: travel)
-                                    }
-                                }
-                                .onDelete(perform: deleteTravels)
+                        // Travel list
+                        ForEach(filteredTravels) { travel in
+                            NavigationLink {
+                                TravelDetailView(travel: travel)
+                            } label: {
+                                TravelRow(travel: travel)
                             }
-                            .listStyle(.insetGrouped)
                         }
+                        .onDelete(perform: deleteTravels)
                     }
+                    .listStyle(.insetGrouped)
                 }
             }
-            .navigationTitle("travel.title".localized())
             .searchable(text: $searchText, prompt: "travel.search_placeholder".localized())
+            .navigationTitle("travel.title".localized())
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         showingFilterSheet = true
                     } label: {
                         Image(systemName: selectedStatusFilter == .all ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
+                            .foregroundStyle(.pink)
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showChronicle = true
+                    } label: {
+                        Image(systemName: "book.fill")
                             .foregroundStyle(.pink)
                     }
                 }
@@ -185,30 +193,31 @@ struct TravelFilterView: View {
 struct TravelRow: View {
     let travel: Travel
     
-    var displayDate: Date {
-        travel.actualDate ?? travel.plannedDate
+    var dateRangeText: String {
+        if let actualStart = travel.actualStartDate, let actualEnd = travel.actualEndDate {
+            // Show actual date range
+            return "\(actualStart.formattedSimple()) - \(actualEnd.formattedSimple())"
+        } else {
+            // Show planned date only
+            return travel.plannedDate.formattedSimple()
+        }
     }
     
     var isPlanned: Bool {
-        travel.actualDate == nil
+        travel.actualStartDate == nil
     }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            // Header: Destination and Date/Status
+            // Header: Destination and Date Range
             HStack(alignment: .top) {
-                Text(travel.destination)
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
-                
-                Spacer()
-                
-                VStack(alignment: .trailing, spacing: 4) {
-                    Text(displayDate.formattedSimple())
-                        .font(.system(size: 13))
-                        .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(travel.destination)
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(.primary)
+                        .lineLimit(2)
                     
+                    // Status badge
                     if isPlanned {
                         Text("travel.status.planned".localized())
                             .font(.system(size: 11, weight: .medium))
@@ -223,8 +232,29 @@ struct TravelRow: View {
                                 )
                             )
                             .clipShape(Capsule())
+                    } else {
+                        Text("travel.status.completed".localized())
+                            .font(.system(size: 11, weight: .medium))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color.green.opacity(0.8), Color.green],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .clipShape(Capsule())
                     }
                 }
+                
+                Spacer()
+                
+                Text(dateRangeText)
+                    .font(.system(size: 13))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.trailing)
             }
             
             // Notes preview
@@ -244,12 +274,8 @@ struct TravelDetailView: View {
     let travel: Travel
     @State private var showingEditSheet = false
     
-    var displayDate: Date {
-        travel.actualDate ?? travel.plannedDate
-    }
-    
     var isPlanned: Bool {
-        travel.actualDate == nil
+        travel.actualStartDate == nil
     }
     
     var body: some View {
@@ -258,8 +284,8 @@ struct TravelDetailView: View {
                 DetailRow(icon: "mappin.and.ellipse", label: "travel.detail.destination".localized(), value: travel.destination)
                 DetailRow(icon: "calendar", label: "travel.detail.planned_date".localized(), value: travel.plannedDate.formattedSimple())
                 
-                if let actualDate = travel.actualDate {
-                    DetailRow(icon: "checkmark.circle.fill", label: "travel.detail.actual_date".localized(), value: actualDate.formattedSimple())
+                if let actualStart = travel.actualStartDate, let actualEnd = travel.actualEndDate {
+                    DetailRow(icon: "checkmark.circle.fill", label: "travel.detail.actual_date".localized(), value: "\(actualStart.formattedSimple()) - \(actualEnd.formattedSimple())")
                 } else {
                     HStack(spacing: 12) {
                         Image(systemName: "info.circle.fill")
@@ -320,7 +346,8 @@ struct AddTravelView: View {
     @State private var destination = ""
     @State private var plannedDate = Date()
     @State private var hasActualDate = false
-    @State private var actualDate = Date()
+    @State private var actualStartDate = Date()
+    @State private var actualEndDate = Date()
     @State private var notes = ""
     @State private var photosData: [Data] = []
     
@@ -337,7 +364,9 @@ struct AddTravelView: View {
                     Toggle("travel.completed_toggle".localized(), isOn: $hasActualDate)
                     
                     if hasActualDate {
-                        DatePicker("travel.actual_date_label".localized(), selection: $actualDate, displayedComponents: .date)
+                        DatePicker("travel.actual_start_date_label".localized(), selection: $actualStartDate, displayedComponents: .date)
+                            .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
+                        DatePicker("travel.actual_end_date_label".localized(), selection: $actualEndDate, displayedComponents: .date)
                             .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
                     }
                 }
@@ -374,7 +403,8 @@ struct AddTravelView: View {
         let travel = Travel(
             destination: destination,
             plannedDate: plannedDate,
-            actualDate: hasActualDate ? actualDate : nil,
+            actualStartDate: hasActualDate ? actualStartDate : nil,
+            actualEndDate: hasActualDate ? actualEndDate : nil,
             notes: notes,
             photosData: photosData
         )
@@ -392,7 +422,8 @@ struct EditTravelView: View {
     @State private var destination = ""
     @State private var plannedDate = Date()
     @State private var hasActualDate = false
-    @State private var actualDate = Date()
+    @State private var actualStartDate = Date()
+    @State private var actualEndDate = Date()
     @State private var notes = ""
     @State private var photosData: [Data] = []
     
@@ -409,7 +440,9 @@ struct EditTravelView: View {
                     Toggle("travel.completed_toggle".localized(), isOn: $hasActualDate)
                     
                     if hasActualDate {
-                        DatePicker("travel.actual_date_label".localized(), selection: $actualDate, displayedComponents: .date)
+                        DatePicker("travel.actual_start_date_label".localized(), selection: $actualStartDate, displayedComponents: .date)
+                            .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
+                        DatePicker("travel.actual_end_date_label".localized(), selection: $actualEndDate, displayedComponents: .date)
                             .environment(\.locale, Locale(identifier: LocalizationManager.shared.currentLanguage.rawValue))
                     }
                 }
@@ -442,8 +475,9 @@ struct EditTravelView: View {
             .onAppear {
                 destination = travel.destination
                 plannedDate = travel.plannedDate
-                hasActualDate = travel.actualDate != nil
-                actualDate = travel.actualDate ?? Date()
+                hasActualDate = travel.actualStartDate != nil
+                actualStartDate = travel.actualStartDate ?? Date()
+                actualEndDate = travel.actualEndDate ?? Date()
                 notes = travel.notes
                 photosData = travel.photosData
             }
@@ -453,7 +487,8 @@ struct EditTravelView: View {
     private func saveChanges() {
         travel.destination = destination
         travel.plannedDate = plannedDate
-        travel.actualDate = hasActualDate ? actualDate : nil
+        travel.actualStartDate = hasActualDate ? actualStartDate : nil
+        travel.actualEndDate = hasActualDate ? actualEndDate : nil
         travel.notes = notes
         travel.photosData = photosData
         try? modelContext.save()
@@ -462,6 +497,6 @@ struct EditTravelView: View {
 }
 
 #Preview {
-    TravelView()
+    TravelView(showChronicle: .constant(false))
         .modelContainer(for: Travel.self, inMemory: true)
 }

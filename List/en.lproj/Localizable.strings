@@ -9,6 +9,15 @@
 "tab.travel" = "Travel";
 "tab.recreation" = "Fun";
 "tab.settings" = "Settings";
+"tab.chronicle" = "Chronicle";
+
+// Chronicle View
+"chronicle.title" = "Chronicle 📖";
+"chronicle.empty.title" = "No memories yet";
+"chronicle.empty.subtitle" = "Your timeline will appear here";
+"chronicle.search_placeholder" = "Search memories";
+"chronicle.filter.all" = "All Years";
+"chronicle.events" = "events";
 
 // Settings View
 "settings.title" = "Settings";
@@ -151,6 +160,9 @@
 "restaurant.detail.location" = "Location";
 "restaurant.detail.date" = "Date";
 "restaurant.detail.notes" = "Notes";
+"restaurant.detail.checkin_count" = "Check-in Count";
+"restaurant.detail.checkin_button" = "Check In";
+"restaurant.detail.times_visited" = "%d times";
 "restaurant.add.title" = "Add Restaurant";
 "restaurant.edit.title" = "Edit Restaurant";
 "restaurant.section.basic_info" = "Basic Info";
@@ -198,5 +210,7 @@
 "travel.destination_placeholder" = "Destination";
 "travel.planned_date_label" = "Planned Date";
 "travel.actual_date_label" = "Actual Date";
-"travel.completed_toggle" = "Completed Trip";
+"travel.actual_start_date_label" = "Actual Start Date";
+"travel.actual_end_date_label" = "Actual End Date";
+"travel.completed_toggle" = "Trip Completed";
 "travel.notes_placeholder" = "Add notes (optional)";

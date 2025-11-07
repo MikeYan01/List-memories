@@ -12,6 +12,7 @@ struct RestaurantView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Restaurant.date, order: .reverse) private var restaurants: [Restaurant]
     @ObservedObject var localizationManager = LocalizationManager.shared
+    @Binding var showChronicle: Bool
     @State private var showingAddSheet = false
     @State private var searchText = ""
     @State private var selectedRatingFilter: RatingFilter = .all
@@ -77,85 +78,93 @@ struct RestaurantView: View {
                         title: "restaurant.empty.title".localized(),
                         subtitle: "restaurant.empty.subtitle".localized()
                     )
+                } else if filteredRestaurants.isEmpty {
+                    EmptyStateView(
+                        icon: "magnifyingglass",
+                        title: "common.search.empty.title".localized(),
+                        subtitle: "common.search.empty.subtitle".localized()
+                    )
                 } else {
-                    VStack(spacing: 0) {
-                        // Filter chips
+                    List {
+                        // Filter chips section
                         if selectedRatingFilter != .all || selectedTag != nil {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
-                                    if selectedRatingFilter != .all {
-                                        FilterChip(
-                                            title: selectedRatingFilter.localizedName,
-                                            isSelected: true
-                                        ) {
-                                            selectedRatingFilter = .all
+                            Section {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 8) {
+                                        if selectedRatingFilter != .all {
+                                            FilterChip(
+                                                title: selectedRatingFilter.localizedName,
+                                                isSelected: true
+                                            ) {
+                                                selectedRatingFilter = .all
+                                            }
                                         }
-                                    }
-                                    
-                                    if let tag = selectedTag {
-                                        FilterChip(
-                                            title: tag,
-                                            isSelected: true
-                                        ) {
-                                            selectedTag = nil
+                                        
+                                        if let tag = selectedTag {
+                                            FilterChip(
+                                                title: tag,
+                                                isSelected: true
+                                            ) {
+                                                selectedTag = nil
+                                            }
                                         }
                                     }
                                 }
-                                .padding(.horizontal)
-                                .padding(.vertical, 8)
                             }
-                            .background(.ultraThinMaterial)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .listRowBackground(Color.clear)
                         }
                         
                         // Tag chips for quick filtering
                         if !allTags.isEmpty && selectedTag == nil && searchText.isEmpty {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
-                                    ForEach(allTags, id: \.self) { tag in
-                                        FilterChip(
-                                            title: tag,
-                                            isSelected: false
-                                        ) {
-                                            selectedTag = tag
+                            Section {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 8) {
+                                        ForEach(allTags, id: \.self) { tag in
+                                            FilterChip(
+                                                title: tag,
+                                                isSelected: false
+                                            ) {
+                                                selectedTag = tag
+                                            }
                                         }
                                     }
                                 }
-                                .padding(.horizontal)
-                                .padding(.vertical, 8)
                             }
-                            .background(Color(.systemGroupedBackground))
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .listRowBackground(Color.clear)
                         }
                         
-                        if filteredRestaurants.isEmpty {
-                            EmptyStateView(
-                                icon: "magnifyingglass",
-                                title: "common.search.empty.title".localized(),
-                                subtitle: "common.search.empty.subtitle".localized()
-                            )
-                        } else {
-                            List {
-                                ForEach(filteredRestaurants) { restaurant in
-                                    NavigationLink {
-                                        RestaurantDetailView(restaurant: restaurant)
-                                    } label: {
-                                        RestaurantRow(restaurant: restaurant)
-                                    }
-                                }
-                                .onDelete(perform: deleteRestaurants)
+                        // Restaurant list
+                        ForEach(filteredRestaurants) { restaurant in
+                            NavigationLink {
+                                RestaurantDetailView(restaurant: restaurant)
+                            } label: {
+                                RestaurantRow(restaurant: restaurant)
                             }
-                            .listStyle(.insetGrouped)
                         }
+                        .onDelete(perform: deleteRestaurants)
                     }
+                    .listStyle(.insetGrouped)
                 }
             }
-            .navigationTitle("restaurant.title".localized())
             .searchable(text: $searchText, prompt: "restaurant.search_placeholder".localized())
+            .navigationTitle("restaurant.title".localized())
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         showingFilterSheet = true
                     } label: {
                         Image(systemName: selectedRatingFilter == .all ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
+                            .foregroundStyle(.pink)
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showChronicle = true
+                    } label: {
+                        Image(systemName: "book.fill")
                             .foregroundStyle(.pink)
                     }
                 }
@@ -236,10 +245,25 @@ struct RestaurantRow: View {
         VStack(alignment: .leading, spacing: 10) {
             // Header: Name and Date
             HStack(alignment: .top) {
-                Text(restaurant.name)
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(restaurant.name)
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(.primary)
+                        .lineLimit(2)
+                    
+                    // Check-in count badge
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 10))
+                        Text(String(format: "restaurant.detail.times_visited".localized(), restaurant.checkInCount))
+                            .font(.system(size: 11, weight: .medium))
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 3)
+                    .background(Color.pink.opacity(0.15))
+                    .foregroundStyle(.pink)
+                    .clipShape(Capsule())
+                }
                 
                 Spacer()
                 
@@ -303,6 +327,7 @@ struct RestaurantRow: View {
 
 struct RestaurantDetailView: View {
     let restaurant: Restaurant
+    @Environment(\.modelContext) private var modelContext
     @State private var showingEditSheet = false
     
     var body: some View {
@@ -315,6 +340,70 @@ struct RestaurantDetailView: View {
                 if restaurant.rating > 0 {
                     RatingRow(rating: restaurant.rating)
                 }
+                
+                // Check-in count row
+                HStack(spacing: 12) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(.pink)
+                        .frame(width: 24)
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("restaurant.detail.checkin_count".localized())
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Text(String(format: "restaurant.detail.times_visited".localized(), restaurant.checkInCount))
+                            .font(.body)
+                            .foregroundStyle(.primary)
+                    }
+                    
+                    Spacer()
+                    
+                    HStack(spacing: 8) {
+                        // Decrease button
+                        Button {
+                            withAnimation {
+                                if restaurant.checkInCount > 0 {
+                                    restaurant.checkInCount -= 1
+                                    try? modelContext.save()
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "minus.circle.fill")
+                                .font(.system(size: 20))
+                                .foregroundStyle(restaurant.checkInCount > 0 ? .pink : .gray.opacity(0.5))
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(restaurant.checkInCount == 0)
+                        
+                        // Increase button
+                        Button {
+                            withAnimation {
+                                restaurant.checkInCount += 1
+                                try? modelContext.save()
+                            }
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "plus.circle.fill")
+                                Text("restaurant.detail.checkin_button".localized())
+                            }
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color.pink.opacity(0.8), Color.pink],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .foregroundStyle(.white)
+                            .clipShape(Capsule())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.vertical, 4)
                 
                 // Display tags
                 if !restaurant.tags.isEmpty {
@@ -521,6 +610,7 @@ struct EditRestaurantView: View {
     @State private var photosData: [Data] = []
     @State private var tags: [String] = []
     @State private var newTagText = ""
+    @State private var checkInCount = 1
     
     var body: some View {
         NavigationStack {
@@ -547,6 +637,40 @@ struct EditRestaurantView: View {
                         RatingPicker(rating: $rating)
                     }
                     .padding(.vertical, 8)
+                }
+                
+                Section("restaurant.detail.checkin_count".localized()) {
+                    HStack {
+                        Text(String(format: "restaurant.detail.times_visited".localized(), checkInCount))
+                            .font(.body)
+                        
+                        Spacer()
+                        
+                        HStack(spacing: 12) {
+                            // Decrease button
+                            Button {
+                                if checkInCount > 0 {
+                                    checkInCount -= 1
+                                }
+                            } label: {
+                                Image(systemName: "minus.circle.fill")
+                                    .font(.system(size: 24))
+                                    .foregroundStyle(checkInCount > 0 ? .pink : .gray.opacity(0.5))
+                            }
+                            .buttonStyle(.borderless)
+                            .disabled(checkInCount == 0)
+                            
+                            // Increase button
+                            Button {
+                                checkInCount += 1
+                            } label: {
+                                Image(systemName: "plus.circle.fill")
+                                    .font(.system(size: 24))
+                                    .foregroundStyle(.pink)
+                            }
+                            .buttonStyle(.borderless)
+                        }
+                    }
                 }
                 
                 Section("restaurant.section.notes".localized()) {
@@ -628,6 +752,7 @@ struct EditRestaurantView: View {
                 notes = restaurant.notes
                 photosData = restaurant.photosData
                 tags = restaurant.tags
+                checkInCount = restaurant.checkInCount
             }
         }
     }
@@ -640,6 +765,7 @@ struct EditRestaurantView: View {
         restaurant.notes = notes
         restaurant.photosData = photosData
         restaurant.tags = tags
+        restaurant.checkInCount = checkInCount
         try? modelContext.save()
         dismiss()
     }
@@ -653,6 +779,6 @@ struct EditRestaurantView: View {
 }
 
 #Preview {
-    RestaurantView()
+    RestaurantView(showChronicle: .constant(false))
         .modelContainer(for: Restaurant.self, inMemory: true)
 }

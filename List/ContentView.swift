@@ -11,25 +11,26 @@ import SwiftData
 struct ContentView: View {
     @ObservedObject var localizationManager = LocalizationManager.shared
     @ObservedObject var themeManager = ThemeManager.shared
+    @State private var showChronicle = false
     
     var body: some View {
         TabView {
-            RestaurantView()
+            RestaurantView(showChronicle: $showChronicle)
                 .tabItem {
                     Label("tab.restaurant".localized(), systemImage: "fork.knife")
                 }
             
-            BeverageView()
+            BeverageView(showChronicle: $showChronicle)
                 .tabItem {
                     Label("tab.beverage".localized(), systemImage: "wineglass")
                 }
             
-            TravelView()
+            TravelView(showChronicle: $showChronicle)
                 .tabItem {
                     Label("tab.travel".localized(), systemImage: "airplane.departure")
                 }
             
-            RecreationView()
+            RecreationView(showChronicle: $showChronicle)
                 .tabItem {
                     Label("tab.recreation".localized(), systemImage: "theatermasks.fill")
                 }
@@ -41,6 +42,9 @@ struct ContentView: View {
         }
         .tint(.pink)
         .preferredColorScheme(themeManager.currentTheme.colorScheme)
+        .sheet(isPresented: $showChronicle) {
+            ChronicleView()
+        }
     }
 }
 

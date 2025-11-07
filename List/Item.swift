@@ -18,8 +18,9 @@ final class Restaurant {
     var notes: String
     @Attribute(.externalStorage) var photosData: [Data]
     var tags: [String]  // Custom tags like "Japanese", "Italian", "Spicy", etc.
+    var checkInCount: Int  // Number of check-ins/visits
     
-    init(name: String, location: String, date: Date, rating: Int = 0, notes: String = "", photosData: [Data] = [], tags: [String] = []) {
+    init(name: String, location: String, date: Date, rating: Int = 0, notes: String = "", photosData: [Data] = [], tags: [String] = [], checkInCount: Int = 1) {
         self.name = name
         self.location = location
         self.date = date
@@ -27,6 +28,7 @@ final class Restaurant {
         self.notes = notes
         self.photosData = photosData
         self.tags = tags
+        self.checkInCount = checkInCount
     }
 }
 
@@ -53,14 +55,21 @@ final class Beverage {
 final class Travel {
     var destination: String
     var plannedDate: Date
-    var actualDate: Date?
+    var actualStartDate: Date?
+    var actualEndDate: Date?
     var notes: String
     @Attribute(.externalStorage) var photosData: [Data]
     
-    init(destination: String, plannedDate: Date, actualDate: Date? = nil, notes: String = "", photosData: [Data] = []) {
+    // Computed property for backward compatibility
+    var actualDate: Date? {
+        actualStartDate
+    }
+    
+    init(destination: String, plannedDate: Date, actualStartDate: Date? = nil, actualEndDate: Date? = nil, notes: String = "", photosData: [Data] = []) {
         self.destination = destination
         self.plannedDate = plannedDate
-        self.actualDate = actualDate
+        self.actualStartDate = actualStartDate
+        self.actualEndDate = actualEndDate
         self.notes = notes
         self.photosData = photosData
     }

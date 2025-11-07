@@ -12,6 +12,7 @@ struct BeverageView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Beverage.date, order: .reverse) private var beverages: [Beverage]
     @ObservedObject var localizationManager = LocalizationManager.shared
+    @Binding var showChronicle: Bool
     @State private var showingAddSheet = false
     @State private var searchText = ""
     @State private var selectedRatingFilter: RatingFilter = .all
@@ -66,55 +67,62 @@ struct BeverageView: View {
                         title: "beverage.empty.title".localized(),
                         subtitle: "beverage.empty.subtitle".localized()
                     )
+                } else if filteredBeverages.isEmpty {
+                    EmptyStateView(
+                        icon: "magnifyingglass",
+                        title: "common.search.empty.title".localized(),
+                        subtitle: "common.search.empty.subtitle".localized()
+                    )
                 } else {
-                    VStack(spacing: 0) {
+                    List {
                         // Filter chips
                         if selectedRatingFilter != .all {
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
-                                    FilterChip(
-                                        title: selectedRatingFilter.localizedName,
-                                        isSelected: true
-                                    ) {
-                                        selectedRatingFilter = .all
+                            Section {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 8) {
+                                        FilterChip(
+                                            title: selectedRatingFilter.localizedName,
+                                            isSelected: true
+                                        ) {
+                                            selectedRatingFilter = .all
+                                        }
                                     }
                                 }
-                                .padding(.horizontal)
-                                .padding(.vertical, 8)
                             }
-                            .background(.ultraThinMaterial)
+                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                            .listRowBackground(Color.clear)
                         }
                         
-                        if filteredBeverages.isEmpty {
-                            EmptyStateView(
-                                icon: "magnifyingglass",
-                                title: "common.search.empty.title".localized(),
-                                subtitle: "common.search.empty.subtitle".localized()
-                            )
-                        } else {
-                            List {
-                                ForEach(filteredBeverages) { beverage in
-                                    NavigationLink {
-                                        BeverageDetailView(beverage: beverage)
-                                    } label: {
-                                        BeverageRow(beverage: beverage)
-                                    }
-                                }
-                                .onDelete(perform: deleteBeverages)
+                        // Beverage list
+                        ForEach(filteredBeverages) { beverage in
+                            NavigationLink {
+                                BeverageDetailView(beverage: beverage)
+                            } label: {
+                                BeverageRow(beverage: beverage)
                             }
-                            .listStyle(.insetGrouped)
                         }
+                        .onDelete(perform: deleteBeverages)
                     }
+                    .listStyle(.insetGrouped)
                 }
             }
-            .navigationTitle("beverage.title".localized())
             .searchable(text: $searchText, prompt: "beverage.search_placeholder".localized())
+            .navigationTitle("beverage.title".localized())
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         showingFilterSheet = true
                     } label: {
                         Image(systemName: selectedRatingFilter == .all ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
+                            .foregroundStyle(.pink)
+                    }
+                }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showChronicle = true
+                    } label: {
+                        Image(systemName: "book.fill")
                             .foregroundStyle(.pink)
                     }
                 }
@@ -422,6 +430,6 @@ struct EditBeverageView: View {
 }
 
 #Preview {
-    BeverageView()
+    BeverageView(showChronicle: .constant(false))
         .modelContainer(for: Beverage.self, inMemory: true)
 }

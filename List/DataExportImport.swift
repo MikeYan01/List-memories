@@ -26,6 +26,8 @@ struct ExportRestaurant: Codable {
     let rating: Int
     let notes: String
     let photos: [String] // Base64 encoded
+    let tags: [String]
+    let checkInCount: Int
 }
 
 struct ExportBeverage: Codable {
@@ -39,7 +41,8 @@ struct ExportBeverage: Codable {
 struct ExportTravel: Codable {
     let destination: String
     let plannedDate: Date
-    let actualDate: Date?
+    let actualStartDate: Date?
+    let actualEndDate: Date?
     let notes: String
     let photos: [String] // Base64 encoded
 }
@@ -77,7 +80,9 @@ class DataManager {
                 date: restaurant.date,
                 rating: restaurant.rating,
                 notes: restaurant.notes,
-                photos: restaurant.photosData.map { $0.base64EncodedString() }
+                photos: restaurant.photosData.map { $0.base64EncodedString() },
+                tags: restaurant.tags,
+                checkInCount: restaurant.checkInCount
             )
         }
         
@@ -95,7 +100,8 @@ class DataManager {
             ExportTravel(
                 destination: travel.destination,
                 plannedDate: travel.plannedDate,
-                actualDate: travel.actualDate,
+                actualStartDate: travel.actualStartDate,
+                actualEndDate: travel.actualEndDate,
                 notes: travel.notes,
                 photos: travel.photosData.map { $0.base64EncodedString() }
             )
@@ -164,7 +170,9 @@ class DataManager {
                 date: exportRestaurant.date,
                 rating: exportRestaurant.rating,
                 notes: exportRestaurant.notes,
-                photosData: photosData
+                photosData: photosData,
+                tags: exportRestaurant.tags,
+                checkInCount: exportRestaurant.checkInCount
             )
             modelContext.insert(restaurant)
             importedCount += 1
@@ -190,7 +198,8 @@ class DataManager {
             let travel = Travel(
                 destination: exportTravel.destination,
                 plannedDate: exportTravel.plannedDate,
-                actualDate: exportTravel.actualDate,
+                actualStartDate: exportTravel.actualStartDate,
+                actualEndDate: exportTravel.actualEndDate,
                 notes: exportTravel.notes,
                 photosData: photosData
             )
