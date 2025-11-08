@@ -205,7 +205,7 @@ struct RecreationRow: View {
                     .padding(.top, 2)
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 4)
     }
 }
 

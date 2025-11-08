@@ -18,6 +18,7 @@
 "chronicle.search_placeholder" = "搜索记忆";
 "chronicle.filter.all" = "所有年份";
 "chronicle.events" = "条记录";
+"chronicle.event" = "条记录";
 
 // Settings View
 "settings.title" = "设置";
@@ -138,8 +139,9 @@
 // Photo Components
 "photo.add_photos" = "添加照片 (最多%d张)";
 "photo.count" = "%d 张照片";
+"photo.count_singular" = "%d 张照片";
 "photo.delete.title" = "删除照片";
-"photo.delete.message" = "确定要删除这张照片吗？";
+"photo.delete.message" = "确定要删除这张照片吗?";
 "photo.delete.confirm" = "删除";
 "photo.gallery.done" = "完成";
 
@@ -163,6 +165,7 @@
 "restaurant.detail.checkin_count" = "打卡次数";
 "restaurant.detail.checkin_button" = "打卡";
 "restaurant.detail.times_visited" = "%d 次";
+"restaurant.detail.time_visited" = "%d 次";
 "restaurant.add.title" = "添加餐厅";
 "restaurant.edit.title" = "编辑餐厅";
 "restaurant.section.basic_info" = "基本信息";

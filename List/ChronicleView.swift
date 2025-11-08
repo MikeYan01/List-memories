@@ -179,7 +179,7 @@ struct ChronicleView: View {
                                         .font(.system(size: 15, weight: .semibold))
                                         .foregroundStyle(.pink)
                                     Spacer()
-                                    Text("\(events.count) \("chronicle.events".localized())")
+                                    Text("\(events.count) \(events.count == 1 ? "chronicle.event".localized() : "chronicle.events".localized())")
                                         .font(.system(size: 13))
                                         .foregroundStyle(.secondary)
                                 }

@@ -255,7 +255,7 @@ struct RestaurantRow: View {
                     HStack(spacing: 4) {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.system(size: 10))
-                        Text(String(format: "restaurant.detail.times_visited".localized(), restaurant.checkInCount))
+                        Text(String(format: restaurant.checkInCount == 1 ? "restaurant.detail.time_visited".localized() : "restaurant.detail.times_visited".localized(), restaurant.checkInCount))
                             .font(.system(size: 11, weight: .medium))
                     }
                     .padding(.horizontal, 8)
@@ -318,10 +318,10 @@ struct RestaurantRow: View {
                         }
                     }
                 }
-                .padding(.top, 2)
+                .padding(.top, 4)
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 4)
     }
 }
 
@@ -351,7 +351,7 @@ struct RestaurantDetailView: View {
                         Text("restaurant.detail.checkin_count".localized())
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                        Text(String(format: "restaurant.detail.times_visited".localized(), restaurant.checkInCount))
+                        Text(String(format: restaurant.checkInCount == 1 ? "restaurant.detail.time_visited".localized() : "restaurant.detail.times_visited".localized(), restaurant.checkInCount))
                             .font(.body)
                             .foregroundStyle(.primary)
                     }
@@ -385,11 +385,12 @@ struct RestaurantDetailView: View {
                             HStack(spacing: 6) {
                                 Image(systemName: "plus.circle.fill")
                                 Text("restaurant.detail.checkin_button".localized())
+                                    .fixedSize()
                             }
                             .font(.subheadline)
                             .fontWeight(.medium)
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
                             .background(
                                 LinearGradient(
                                     colors: [Color.pink.opacity(0.8), Color.pink],
@@ -641,7 +642,7 @@ struct EditRestaurantView: View {
                 
                 Section("restaurant.detail.checkin_count".localized()) {
                     HStack {
-                        Text(String(format: "restaurant.detail.times_visited".localized(), checkInCount))
+                        Text(String(format: checkInCount == 1 ? "restaurant.detail.time_visited".localized() : "restaurant.detail.times_visited".localized(), checkInCount))
                             .font(.body)
                         
                         Spacer()

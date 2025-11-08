@@ -154,10 +154,10 @@ struct PhotoCarouselView: View {
                 .padding(.horizontal)
             }
             
-            if photosData.count > 1 {
+            if photosData.count >= 1 {
                 HStack {
                     Spacer()
-                    Text(String(format: "photo.count".localized(), photosData.count))
+                    Text(String(format: photosData.count == 1 ? "photo.count_singular".localized() : "photo.count".localized(), photosData.count))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Spacer()
@@ -242,35 +242,6 @@ struct PhotoGalleryView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarBackground(.black, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
-        }
-    }
-}
-
-// Compact photo thumbnail for first photo in list
-struct PhotoThumbnail: View {
-    let photosData: [Data]
-    
-    var body: some View {
-        if let firstPhoto = photosData.first, let uiImage = UIImage(data: firstPhoto) {
-            ZStack(alignment: .bottomTrailing) {
-                Image(uiImage: uiImage)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 60, height: 60)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                
-                if photosData.count > 1 {
-                    Text("+\(photosData.count - 1)")
-                        .font(.caption2)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 2)
-                        .background(.black.opacity(0.7))
-                        .clipShape(Capsule())
-                        .padding(4)
-                }
-            }
         }
     }
 }
