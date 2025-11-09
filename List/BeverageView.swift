@@ -14,49 +14,6 @@ struct BeverageView: View {
     @ObservedObject var localizationManager = LocalizationManager.shared
     @Binding var showChronicle: Bool
     @State private var showingAddSheet = false
-    @State private var searchText = ""
-    @State private var selectedRatingFilter: RatingFilter = .all
-    @State private var showingFilterSheet = false
-    
-    enum RatingFilter: String, CaseIterable {
-        case all = "all"
-        case highRated = "high"
-        case mediumRated = "medium"
-        case lowRated = "low"
-        case unrated = "unrated"
-        
-        var localizedName: String {
-            switch self {
-            case .all: return "beverage.filter.all".localized()
-            case .highRated: return "beverage.filter.high".localized()
-            case .mediumRated: return "beverage.filter.medium".localized()
-            case .lowRated: return "beverage.filter.low".localized()
-            case .unrated: return "beverage.filter.unrated".localized()
-            }
-        }
-        
-        func matches(_ rating: Int) -> Bool {
-            switch self {
-            case .all: return true
-            case .highRated: return rating >= 8 && rating <= 10
-            case .mediumRated: return rating >= 5 && rating <= 7
-            case .lowRated: return rating >= 1 && rating <= 4
-            case .unrated: return rating == 0
-            }
-        }
-    }
-    
-    var filteredBeverages: [Beverage] {
-        beverages.filter { beverage in
-            let matchesSearch = searchText.isEmpty ||
-                beverage.shopName.localizedCaseInsensitiveContains(searchText) ||
-                beverage.notes.localizedCaseInsensitiveContains(searchText)
-            
-            let matchesRating = selectedRatingFilter.matches(beverage.rating)
-            
-            return matchesSearch && matchesRating
-        }
-    }
     
     var body: some View {
         NavigationStack {
@@ -67,34 +24,9 @@ struct BeverageView: View {
                         title: "beverage.empty.title".localized(),
                         subtitle: "beverage.empty.subtitle".localized()
                     )
-                } else if filteredBeverages.isEmpty {
-                    EmptyStateView(
-                        icon: "magnifyingglass",
-                        title: "common.search.empty.title".localized(),
-                        subtitle: "common.search.empty.subtitle".localized()
-                    )
                 } else {
                     List {
-                        // Filter chips
-                        if selectedRatingFilter != .all {
-                            Section {
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 8) {
-                                        FilterChip(
-                                            title: selectedRatingFilter.localizedName,
-                                            isSelected: true
-                                        ) {
-                                            selectedRatingFilter = .all
-                                        }
-                                    }
-                                }
-                            }
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .listRowBackground(Color.clear)
-                        }
-                        
-                        // Beverage list
-                        ForEach(filteredBeverages) { beverage in
+                        ForEach(beverages) { beverage in
                             NavigationLink {
                                 BeverageDetailView(beverage: beverage)
                             } label: {
@@ -106,14 +38,12 @@ struct BeverageView: View {
                     .listStyle(.insetGrouped)
                 }
             }
-            .searchable(text: $searchText, prompt: "beverage.search_placeholder".localized())
             .navigationTitle("beverage.title".localized())
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        showingFilterSheet = true
-                    } label: {
-                        Image(systemName: selectedRatingFilter == .all ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape.fill")
                             .foregroundStyle(.pink)
                     }
                 }
@@ -140,57 +70,14 @@ struct BeverageView: View {
             .sheet(isPresented: $showingAddSheet) {
                 AddBeverageView()
             }
-            .sheet(isPresented: $showingFilterSheet) {
-                BeverageFilterView(selectedRating: $selectedRatingFilter)
-            }
         }
     }
     
     private func deleteBeverages(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                let beverage = filteredBeverages[index]
+                let beverage = beverages[index]
                 modelContext.delete(beverage)
-            }
-        }
-    }
-}
-
-// Filter view for beverage rating selection
-struct BeverageFilterView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Binding var selectedRating: BeverageView.RatingFilter
-    
-    var body: some View {
-        NavigationStack {
-            List {
-                Section("beverage.filter.section".localized()) {
-                    ForEach(BeverageView.RatingFilter.allCases, id: \.self) { filter in
-                        Button {
-                            selectedRating = filter
-                            dismiss()
-                        } label: {
-                            HStack {
-                                Text(filter.localizedName)
-                                    .foregroundStyle(.primary)
-                                Spacer()
-                                if selectedRating == filter {
-                                    Image(systemName: "checkmark")
-                                        .foregroundStyle(.pink)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            .navigationTitle("beverage.filter.title".localized())
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("common.done".localized()) {
-                        dismiss()
-                    }
-                }
             }
         }
     }
@@ -409,6 +296,12 @@ struct EditBeverageView: View {
                 }
             }
             .onAppear {
+                    _ = ToolbarItem(placement: .navigationBarLeading) {
+                        NavigationLink(destination: SettingsView()) {
+                            Image(systemName: "gearshape.fill")
+                                .foregroundStyle(.pink)
+                        }
+                    }
                 shopName = beverage.shopName
                 date = beverage.date
                 rating = beverage.rating

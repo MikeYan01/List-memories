@@ -99,6 +99,7 @@
 "common.cancel" = "取消";
 "common.save" = "保存";
 "common.edit" = "编辑";
+"common.search" = "搜索";
 "common.search.empty.title" = "没有找到结果";
 "common.search.empty.subtitle" = "试试其他搜索词或筛选条件";
 

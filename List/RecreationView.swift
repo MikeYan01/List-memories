@@ -14,93 +14,89 @@ struct RecreationView: View {
     @ObservedObject var localizationManager = LocalizationManager.shared
     @Binding var showChronicle: Bool
     @State private var showingAddSheet = false
-    @State private var selectedFilter: RecreationType?
-    @State private var searchText = ""
+    @State private var selectedType: RecreationType? = nil // nil means "All" is selected
     
-    var filteredRecreations: [Recreation] {
-        recreations.filter { recreation in
-            let matchesType = selectedFilter == nil || recreation.type == selectedFilter
-            let matchesSearch = searchText.isEmpty ||
-                recreation.name.localizedCaseInsensitiveContains(searchText) ||
-                recreation.location.localizedCaseInsensitiveContains(searchText) ||
-                recreation.notes.localizedCaseInsensitiveContains(searchText)
-            
-            return matchesType && matchesSearch
+    // Filtered recreations based on selected type
+    private var filteredRecreations: [Recreation] {
+        if let selectedType = selectedType {
+            return recreations.filter { recreation in
+                recreation.type == selectedType
+            }
         }
+        return recreations
     }
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                if recreations.isEmpty {
-                    EmptyStateView(
-                        icon: "theatermasks.fill",
-                        title: "recreation.empty.title".localized(),
-                        subtitle: "recreation.empty.subtitle".localized()
-                    )
-                } else if filteredRecreations.isEmpty {
-                    EmptyStateView(
-                        icon: "magnifyingglass",
-                        title: "common.search.empty.title".localized(),
-                        subtitle: "common.search.empty.subtitle".localized()
-                    )
-                } else {
-                    List {
-                        // Filter chips
-                        if searchText.isEmpty {
-                            Section {
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 12) {
-                                        Button {
-                                            selectedFilter = nil
-                                        } label: {
-                                            Text("recreation.filter.all".localized())
-                                                .font(.subheadline)
-                                                .fontWeight(.medium)
-                                                .padding(.horizontal, 12)
-                                                .padding(.vertical, 6)
-                                                .background(selectedFilter == nil ? Color.pink : Color.gray.opacity(0.2))
-                                                .foregroundStyle(selectedFilter == nil ? .white : .primary)
-                                                .clipShape(Capsule())
-                                        }
-                                        
-                                        ForEach(RecreationType.allCases, id: \.self) { type in
-                                            Button {
-                                                selectedFilter = type
-                                            } label: {
-                                                Text(type.localizedName)
-                                                    .font(.subheadline)
-                                                    .fontWeight(.medium)
-                                                    .padding(.horizontal, 12)
-                                                    .padding(.vertical, 6)
-                                                    .background(selectedFilter == type ? Color.pink : Color.gray.opacity(0.2))
-                                                    .foregroundStyle(selectedFilter == type ? .white : .primary)
-                                                    .clipShape(Capsule())
-                                            }
-                                        }
-                                    }
+            VStack(spacing: 0) {
+                // Type filter section
+                if !recreations.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            // All filter
+                            RecreationFilterChip(
+                                title: "recreation.filter.all".localized(),
+                                isSelected: selectedType == nil
+                            ) {
+                                selectedType = nil
+                            }
+                            
+                            // Individual type filters
+                            ForEach(RecreationType.allCases, id: \.self) { type in
+                                RecreationFilterChip(
+                                    title: type.localizedName,
+                                    isSelected: selectedType == type
+                                ) {
+                                    selectedType = type
                                 }
                             }
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .listRowBackground(Color.clear)
                         }
-                        
-                        // Recreation list
-                        ForEach(filteredRecreations) { recreation in
-                            NavigationLink {
-                                RecreationDetailView(recreation: recreation)
-                            } label: {
-                                RecreationRow(recreation: recreation)
-                            }
-                        }
-                        .onDelete(perform: deleteRecreations)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
                     }
-                    .listStyle(.insetGrouped)
+                    .background(Color(.systemGroupedBackground))
+                }
+                
+                // Main content
+                ZStack {
+                    if recreations.isEmpty {
+                        EmptyStateView(
+                            icon: "theatermasks.fill",
+                            title: "recreation.empty.title".localized(),
+                            subtitle: "recreation.empty.subtitle".localized()
+                        )
+                    } else if filteredRecreations.isEmpty {
+                        // Show empty state when filter returns no results
+                        EmptyStateView(
+                            icon: "magnifyingglass",
+                            title: "No Results",
+                            subtitle: "No recreations match the selected types"
+                        )
+                    } else {
+                        List {
+                            ForEach(filteredRecreations) { recreation in
+                                NavigationLink {
+                                    RecreationDetailView(recreation: recreation)
+                                } label: {
+                                    RecreationRow(recreation: recreation)
+                                }
+                            }
+                            .onDelete(perform: deleteRecreations)
+                        }
+                        .listStyle(.insetGrouped)
+                    }
                 }
             }
-            .searchable(text: $searchText, prompt: "recreation.search_placeholder".localized())
             .navigationTitle("recreation.title".localized())
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape.fill")
+                            .foregroundStyle(.pink)
+                    }
+                }
+                
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showChronicle = true
@@ -131,6 +127,26 @@ struct RecreationView: View {
             for index in offsets {
                 modelContext.delete(filteredRecreations[index])
             }
+        }
+    }
+}
+
+// Filter chip component without dismiss button for recreation view
+struct RecreationFilterChip: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(isSelected ? Color.pink : Color.gray.opacity(0.2))
+                .foregroundStyle(isSelected ? .white : .primary)
+                .clipShape(Capsule())
         }
     }
 }
@@ -434,6 +450,12 @@ struct EditRecreationView: View {
                 }
             }
             .onAppear {
+                _ = ToolbarItem(placement: .navigationBarLeading) {
+                        NavigationLink(destination: SettingsView()) {
+                            Image(systemName: "gearshape.fill")
+                                .foregroundStyle(.pink)
+                        }
+                    }
                 type = recreation.type
                 name = recreation.name
                 location = recreation.location

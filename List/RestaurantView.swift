@@ -14,148 +14,85 @@ struct RestaurantView: View {
     @ObservedObject var localizationManager = LocalizationManager.shared
     @Binding var showChronicle: Bool
     @State private var showingAddSheet = false
-    @State private var searchText = ""
-    @State private var selectedRatingFilter: RatingFilter = .all
-    @State private var showingFilterSheet = false
-    @State private var selectedTag: String?
+    @State private var selectedTags: Set<String> = []
     
-    // Get all unique tags from restaurants
-    var allTags: [String] {
-        let tagSet = Set(restaurants.flatMap { $0.tags })
-        return Array(tagSet).sorted()
+    // Computed property to get all unique tags from restaurants
+    private var allTags: [String] {
+        var tags = Set<String>()
+        restaurants.forEach { restaurant in
+            restaurant.tags.forEach { tags.insert($0) }
+        }
+        return Array(tags).sorted()
     }
     
-    enum RatingFilter: String, CaseIterable {
-        case all = "all"
-        case highRated = "high"
-        case mediumRated = "medium"
-        case lowRated = "low"
-        case unrated = "unrated"
-        
-        var localizedName: String {
-            switch self {
-            case .all: return "restaurant.filter.all".localized()
-            case .highRated: return "restaurant.filter.high".localized()
-            case .mediumRated: return "restaurant.filter.medium".localized()
-            case .lowRated: return "restaurant.filter.low".localized()
-            case .unrated: return "restaurant.filter.unrated".localized()
-            }
+    // Filtered restaurants based on selected tags
+    private var filteredRestaurants: [Restaurant] {
+        if selectedTags.isEmpty {
+            return restaurants
         }
-        
-        func matches(_ rating: Int) -> Bool {
-            switch self {
-            case .all: return true
-            case .highRated: return rating >= 8 && rating <= 10
-            case .mediumRated: return rating >= 5 && rating <= 7
-            case .lowRated: return rating >= 1 && rating <= 4
-            case .unrated: return rating == 0
-            }
-        }
-    }
-    
-    var filteredRestaurants: [Restaurant] {
-        restaurants.filter { restaurant in
-            let matchesSearch = searchText.isEmpty ||
-                restaurant.name.localizedCaseInsensitiveContains(searchText) ||
-                restaurant.location.localizedCaseInsensitiveContains(searchText) ||
-                restaurant.notes.localizedCaseInsensitiveContains(searchText) ||
-                restaurant.tags.contains(where: { $0.localizedCaseInsensitiveContains(searchText) })
-            
-            let matchesRating = selectedRatingFilter.matches(restaurant.rating)
-            
-            let matchesTag = selectedTag == nil || restaurant.tags.contains(selectedTag!)
-            
-            return matchesSearch && matchesRating && matchesTag
+        return restaurants.filter { restaurant in
+            !Set(restaurant.tags).isDisjoint(with: selectedTags)
         }
     }
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                if restaurants.isEmpty {
-                    EmptyStateView(
-                        icon: "fork.knife",
-                        title: "restaurant.empty.title".localized(),
-                        subtitle: "restaurant.empty.subtitle".localized()
-                    )
-                } else if filteredRestaurants.isEmpty {
-                    EmptyStateView(
-                        icon: "magnifyingglass",
-                        title: "common.search.empty.title".localized(),
-                        subtitle: "common.search.empty.subtitle".localized()
-                    )
-                } else {
-                    List {
-                        // Filter chips section
-                        if selectedRatingFilter != .all || selectedTag != nil {
-                            Section {
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 8) {
-                                        if selectedRatingFilter != .all {
-                                            FilterChip(
-                                                title: selectedRatingFilter.localizedName,
-                                                isSelected: true
-                                            ) {
-                                                selectedRatingFilter = .all
-                                            }
-                                        }
-                                        
-                                        if let tag = selectedTag {
-                                            FilterChip(
-                                                title: tag,
-                                                isSelected: true
-                                            ) {
-                                                selectedTag = nil
-                                            }
-                                        }
-                                    }
+            VStack(spacing: 0) {
+                // Tags filter section
+                if !allTags.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(allTags, id: \.self) { tag in
+                                FilterChip(
+                                    title: tag,
+                                    isSelected: selectedTags.contains(tag)
+                                ) {
+                                    toggleTag(tag)
                                 }
                             }
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .listRowBackground(Color.clear)
                         }
-                        
-                        // Tag chips for quick filtering
-                        if !allTags.isEmpty && selectedTag == nil && searchText.isEmpty {
-                            Section {
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 8) {
-                                        ForEach(allTags, id: \.self) { tag in
-                                            FilterChip(
-                                                title: tag,
-                                                isSelected: false
-                                            ) {
-                                                selectedTag = tag
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .listRowBackground(Color.clear)
-                        }
-                        
-                        // Restaurant list
-                        ForEach(filteredRestaurants) { restaurant in
-                            NavigationLink {
-                                RestaurantDetailView(restaurant: restaurant)
-                            } label: {
-                                RestaurantRow(restaurant: restaurant)
-                            }
-                        }
-                        .onDelete(perform: deleteRestaurants)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
                     }
-                    .listStyle(.insetGrouped)
+                    .background(Color(.systemGroupedBackground))
+                }
+                
+                // Main content
+                ZStack {
+                    if restaurants.isEmpty {
+                        EmptyStateView(
+                            icon: "fork.knife",
+                            title: "restaurant.empty.title".localized(),
+                            subtitle: "restaurant.empty.subtitle".localized()
+                        )
+                    } else if filteredRestaurants.isEmpty {
+                        // Show empty state when filter returns no results
+                        EmptyStateView(
+                            icon: "magnifyingglass",
+                            title: "No Results",
+                            subtitle: "No restaurants match the selected tags"
+                        )
+                    } else {
+                        List {
+                            ForEach(filteredRestaurants) { restaurant in
+                                NavigationLink {
+                                    RestaurantDetailView(restaurant: restaurant)
+                                } label: {
+                                    RestaurantRow(restaurant: restaurant)
+                                }
+                            }
+                            .onDelete(perform: deleteRestaurants)
+                        }
+                        .listStyle(.insetGrouped)
+                    }
                 }
             }
-            .searchable(text: $searchText, prompt: "restaurant.search_placeholder".localized())
             .navigationTitle("restaurant.title".localized())
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        showingFilterSheet = true
-                    } label: {
-                        Image(systemName: selectedRatingFilter == .all ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape.fill")
                             .foregroundStyle(.pink)
                     }
                 }
@@ -182,9 +119,6 @@ struct RestaurantView: View {
             .sheet(isPresented: $showingAddSheet) {
                 AddRestaurantView()
             }
-            .sheet(isPresented: $showingFilterSheet) {
-                FilterView(selectedRating: $selectedRatingFilter)
-            }
         }
     }
     
@@ -196,43 +130,13 @@ struct RestaurantView: View {
             }
         }
     }
-}
-
-// Filter view for rating selection
-struct FilterView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Binding var selectedRating: RestaurantView.RatingFilter
     
-    var body: some View {
-        NavigationStack {
-            List {
-                Section("restaurant.filter.section".localized()) {
-                    ForEach(RestaurantView.RatingFilter.allCases, id: \.self) { filter in
-                        Button {
-                            selectedRating = filter
-                            dismiss()
-                        } label: {
-                            HStack {
-                                Text(filter.localizedName)
-                                    .foregroundStyle(.primary)
-                                Spacer()
-                                if selectedRating == filter {
-                                    Image(systemName: "checkmark")
-                                        .foregroundStyle(.pink)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            .navigationTitle("restaurant.filter.title".localized())
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("common.done".localized()) {
-                        dismiss()
-                    }
-                }
+    private func toggleTag(_ tag: String) {
+        withAnimation {
+            if selectedTags.contains(tag) {
+                selectedTags.remove(tag)
+            } else {
+                selectedTags.insert(tag)
             }
         }
     }
@@ -746,6 +650,12 @@ struct EditRestaurantView: View {
                 }
             }
             .onAppear {
+                _ = ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape.fill")
+                            .foregroundStyle(.pink)
+                    }
+                }
                 name = restaurant.name
                 location = restaurant.location
                 date = restaurant.date

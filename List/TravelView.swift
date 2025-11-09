@@ -14,43 +14,6 @@ struct TravelView: View {
     @ObservedObject var localizationManager = LocalizationManager.shared
     @Binding var showChronicle: Bool
     @State private var showingAddSheet = false
-    @State private var searchText = ""
-    @State private var selectedStatusFilter: StatusFilter = .all
-    @State private var showingFilterSheet = false
-    
-    enum StatusFilter: String, CaseIterable {
-        case all = "all"
-        case planned = "planned"
-        case completed = "completed"
-        
-        var localizedName: String {
-            switch self {
-            case .all: return "travel.filter.all".localized()
-            case .planned: return "travel.filter.planned".localized()
-            case .completed: return "travel.filter.completed".localized()
-            }
-        }
-        
-        func matches(_ travel: Travel) -> Bool {
-            switch self {
-            case .all: return true
-            case .planned: return travel.actualDate == nil
-            case .completed: return travel.actualDate != nil
-            }
-        }
-    }
-    
-    var filteredTravels: [Travel] {
-        travels.filter { travel in
-            let matchesSearch = searchText.isEmpty ||
-                travel.destination.localizedCaseInsensitiveContains(searchText) ||
-                travel.notes.localizedCaseInsensitiveContains(searchText)
-            
-            let matchesStatus = selectedStatusFilter.matches(travel)
-            
-            return matchesSearch && matchesStatus
-        }
-    }
     
     var body: some View {
         NavigationStack {
@@ -61,34 +24,9 @@ struct TravelView: View {
                         title: "travel.empty.title".localized(),
                         subtitle: "travel.empty.subtitle".localized()
                     )
-                } else if filteredTravels.isEmpty {
-                    EmptyStateView(
-                        icon: "magnifyingglass",
-                        title: "common.search.empty.title".localized(),
-                        subtitle: "common.search.empty.subtitle".localized()
-                    )
                 } else {
                     List {
-                        // Filter chips
-                        if selectedStatusFilter != .all {
-                            Section {
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 8) {
-                                        FilterChip(
-                                            title: selectedStatusFilter.localizedName,
-                                            isSelected: true
-                                        ) {
-                                            selectedStatusFilter = .all
-                                        }
-                                    }
-                                }
-                            }
-                            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                            .listRowBackground(Color.clear)
-                        }
-                        
-                        // Travel list
-                        ForEach(filteredTravels) { travel in
+                        ForEach(travels) { travel in
                             NavigationLink {
                                 TravelDetailView(travel: travel)
                             } label: {
@@ -100,14 +38,12 @@ struct TravelView: View {
                     .listStyle(.insetGrouped)
                 }
             }
-            .searchable(text: $searchText, prompt: "travel.search_placeholder".localized())
             .navigationTitle("travel.title".localized())
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        showingFilterSheet = true
-                    } label: {
-                        Image(systemName: selectedStatusFilter == .all ? "line.3.horizontal.decrease.circle" : "line.3.horizontal.decrease.circle.fill")
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape.fill")
                             .foregroundStyle(.pink)
                     }
                 }
@@ -134,57 +70,14 @@ struct TravelView: View {
             .sheet(isPresented: $showingAddSheet) {
                 AddTravelView()
             }
-            .sheet(isPresented: $showingFilterSheet) {
-                TravelFilterView(selectedStatus: $selectedStatusFilter)
-            }
         }
     }
     
     private func deleteTravels(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                let travel = filteredTravels[index]
+                let travel = travels[index]
                 modelContext.delete(travel)
-            }
-        }
-    }
-}
-
-// Filter view for travel status selection
-struct TravelFilterView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Binding var selectedStatus: TravelView.StatusFilter
-    
-    var body: some View {
-        NavigationStack {
-            List {
-                Section("travel.filter.section".localized()) {
-                    ForEach(TravelView.StatusFilter.allCases, id: \.self) { filter in
-                        Button {
-                            selectedStatus = filter
-                            dismiss()
-                        } label: {
-                            HStack {
-                                Text(filter.localizedName)
-                                    .foregroundStyle(.primary)
-                                Spacer()
-                                if selectedStatus == filter {
-                                    Image(systemName: "checkmark")
-                                        .foregroundStyle(.pink)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            .navigationTitle("travel.filter.title".localized())
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("common.done".localized()) {
-                        dismiss()
-                    }
-                }
             }
         }
     }
@@ -473,6 +366,12 @@ struct EditTravelView: View {
                 }
             }
             .onAppear {
+                _ = ToolbarItem(placement: .navigationBarLeading) {
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape.fill")
+                            .foregroundStyle(.pink)
+                    }
+                }
                 destination = travel.destination
                 plannedDate = travel.plannedDate
                 hasActualDate = travel.actualStartDate != nil
