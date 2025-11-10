@@ -306,10 +306,10 @@ struct AddRecreationView: View {
     
     var namePlaceholder: String {
         switch type {
-        case .outdoor: return "活动名称（如：迪士尼）"
-        case .movie: return "电影名称"
-        case .concert: return "演唱会名称"
-        case .game: return "游戏名称"
+        case .outdoor: return "recreation.name_placeholder.outdoor".localized()
+        case .movie: return "recreation.name_placeholder.movie".localized()
+        case .concert: return "recreation.name_placeholder.concert".localized()
+        case .game: return "recreation.name_placeholder.game".localized()
         }
     }
     

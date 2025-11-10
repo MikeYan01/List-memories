@@ -21,14 +21,13 @@ A beautiful iOS app built with SwiftUI and SwiftData to track and cherish your l
 - Photo thumbnail previews in list views
 
 ### ⭐ Rating System
-- Rate your experiences from 1-5 stars
+- Rate your experiences from 1-10 points (1-5 stars)
 - Visual star rating picker
-- Filter entries by rating (All, 4+, Unrated)
 
 ### 🔍 Smart Search & Filtering
 - Search across all entries by name, location, or notes
-- Filter by status (Travel: Planned/Completed, Recreation: By Type)
 - Real-time search results
+- Custom tags filter
 
 ### 📊 Data Management
 - Export all data as JSON for backup
@@ -40,37 +39,7 @@ A beautiful iOS app built with SwiftUI and SwiftData to track and cherish your l
 - Beautiful pink accent color theme
 - Empty state illustrations
 - Responsive design optimized for iOS
-
-
-## 🌟 Key Features Detail
-
-### Restaurant Tracking
-- Name, location, and visit date
-- Photo gallery
-- 5-star rating system
-- Personal notes
-- Edit and delete entries
-
-### Beverage Tracking
-- Shop/cafe name
-- Visit date
-- Rating system
-- Photo support
-- Notes for flavor descriptions
-
-### Travel Management
-- Destination tracking
-- Planned vs. actual dates
-- Status indicators (Planned/Completed)
-- Photo documentation
-- Travel notes
-
-### Recreation Activities
-- Four types: Outdoor, Movie, Concert, Game
-- Activity-specific fields
-- Date tracking
-- Photo memories
-- Detailed notes
+- Light/Dark theme support
 
 ## 🔐 Privacy
 
