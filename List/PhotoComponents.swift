@@ -8,6 +8,73 @@
 import SwiftUI
 import PhotosUI
 
+// Lazy-loading image view for better performance
+struct LazyImageView: View {
+    let photoData: Data
+    let width: CGFloat?
+    let height: CGFloat
+    let contentMode: ContentMode
+    
+    @State private var uiImage: UIImage?
+    @State private var isLoading = false
+    
+    init(photoData: Data, width: CGFloat? = nil, height: CGFloat, contentMode: ContentMode = .fill) {
+        self.photoData = photoData
+        self.width = width
+        self.height = height
+        self.contentMode = contentMode
+    }
+    
+    var body: some View {
+        Group {
+            if let uiImage = uiImage {
+                if contentMode == .fill {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: width, height: height)
+                        .clipped()
+                } else {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: width, height: height)
+                }
+            } else {
+                // Placeholder while loading
+                Rectangle()
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: width, height: height)
+                    .overlay {
+                        if isLoading {
+                            ProgressView()
+                                .tint(.appAccent)
+                        }
+                    }
+            }
+        }
+        .onAppear {
+            loadImage()
+        }
+    }
+    
+    private func loadImage() {
+        guard uiImage == nil, !isLoading else { return }
+        
+        isLoading = true
+        
+        // Load image in background thread to avoid blocking UI
+        Task.detached(priority: .userInitiated) {
+            let image = UIImage(data: photoData)
+            
+            await MainActor.run {
+                self.uiImage = image
+                self.isLoading = false
+            }
+        }
+    }
+}
+
 // Multiple photos picker
 struct MultiplePhotosPickerView: View {
     @Binding var photosData: [Data]
@@ -23,28 +90,22 @@ struct MultiplePhotosPickerView: View {
                 // Photo grid
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
                     ForEach(Array(photosData.enumerated()), id: \.offset) { index, photoData in
-                        if let uiImage = UIImage(data: photoData) {
-                            ZStack(alignment: .topTrailing) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(height: 100)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    .clipped()
-                                
-                                // Delete button
-                                Button {
-                                    photoToDelete = index
-                                    showingDeleteAlert = true
-                                } label: {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .font(.title3)
-                                        .foregroundStyle(.white)
-                                        .background(Circle().fill(.black.opacity(0.5)))
-                                        .padding(4)
-                                }
-                                .buttonStyle(.plain)
+                        ZStack(alignment: .topTrailing) {
+                            LazyImageView(photoData: photoData, height: 100)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            
+                            // Delete button
+                            Button {
+                                photoToDelete = index
+                                showingDeleteAlert = true
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.white)
+                                    .background(Circle().fill(.black.opacity(0.5)))
+                                    .padding(4)
                             }
+                            .buttonStyle(.plain)
                         }
                     }
                     
@@ -137,17 +198,11 @@ struct PhotoCarouselView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(Array(photosData.enumerated()), id: \.offset) { index, photoData in
-                        if let uiImage = UIImage(data: photoData) {
-                            Button {
-                                selectedPhotoIndex = index
-                            } label: {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 280, height: 200)
-                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                                    .clipped()
-                            }
+                        Button {
+                            selectedPhotoIndex = index
+                        } label: {
+                            LazyImageView(photoData: photoData, width: 280, height: 200)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                     }
                 }
@@ -200,17 +255,17 @@ struct PhotoGalleryView: View {
                 
                 TabView(selection: $currentIndex) {
                     ForEach(Array(photosData.enumerated()), id: \.offset) { index, photoData in
-                        if let uiImage = UIImage(data: photoData) {
-                            GeometryReader { geometry in
-                                ScrollView([.horizontal, .vertical]) {
-                                    Image(uiImage: uiImage)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: geometry.size.width, height: geometry.size.height)
-                                }
+                        GeometryReader { geometry in
+                            ScrollView([.horizontal, .vertical]) {
+                                LazyImageView(
+                                    photoData: photoData,
+                                    width: geometry.size.width,
+                                    height: geometry.size.height,
+                                    contentMode: .fit
+                                )
                             }
-                            .tag(index)
                         }
+                        .tag(index)
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))

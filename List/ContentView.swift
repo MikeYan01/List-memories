@@ -35,7 +35,7 @@ struct ContentView: View {
                 SearchView()
             }
         }
-        .tint(.pink)
+        .tint(themeManager.accentColor.color)
         .preferredColorScheme(themeManager.currentTheme.colorScheme)
         .sheet(isPresented: $showChronicle) {
             ChronicleView()

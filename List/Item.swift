@@ -14,7 +14,7 @@ final class Restaurant {
     var name: String
     var location: String
     var date: Date
-    var rating: Int  // 0-10 points
+    var rating: Int  // 0-100 points
     var notes: String
     @Attribute(.externalStorage) var photosData: [Data]
     var tags: [String]  // Custom tags like "Japanese", "Italian", "Spicy", etc.
@@ -37,7 +37,7 @@ final class Restaurant {
 final class Beverage {
     var shopName: String
     var date: Date
-    var rating: Int  // 0-10 points
+    var rating: Int  // 0-100 points
     var notes: String
     @Attribute(.externalStorage) var photosData: [Data]
     

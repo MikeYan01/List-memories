@@ -44,10 +44,10 @@ enum TimelineEvent: Identifiable {
     
     var color: Color {
         switch self {
-        case .restaurant: return .pink
-        case .beverage: return .pink
-        case .travel: return .pink
-        case .recreation: return .pink
+        case .restaurant: return .appAccent
+        case .beverage: return .appAccent
+        case .travel: return .appAccent
+        case .recreation: return .appAccent
         }
     }
     
@@ -141,7 +141,7 @@ struct ChronicleView: View {
                                                 .fontWeight(.medium)
                                                 .padding(.horizontal, 12)
                                                 .padding(.vertical, 6)
-                                                .background(selectedYear == nil ? Color.pink : Color.gray.opacity(0.2))
+                                                .background(selectedYear == nil ? Color.appAccent : Color.gray.opacity(0.2))
                                                 .foregroundStyle(selectedYear == nil ? .white : .primary)
                                                 .clipShape(Capsule())
                                         }
@@ -155,7 +155,7 @@ struct ChronicleView: View {
                                                     .fontWeight(.medium)
                                                     .padding(.horizontal, 12)
                                                     .padding(.vertical, 6)
-                                                    .background(selectedYear == year ? Color.pink : Color.gray.opacity(0.2))
+                                                    .background(selectedYear == year ? Color.appAccent : Color.gray.opacity(0.2))
                                                     .foregroundStyle(selectedYear == year ? .white : .primary)
                                                     .clipShape(Capsule())
                                             }
@@ -177,7 +177,7 @@ struct ChronicleView: View {
                                 HStack {
                                     Text(monthYear)
                                         .font(.system(size: 15, weight: .semibold))
-                                        .foregroundStyle(.pink)
+                                        .foregroundStyle(.appAccent)
                                     Spacer()
                                     Text("\(events.count) \(events.count == 1 ? "chronicle.event".localized() : "chronicle.events".localized())")
                                         .font(.system(size: 13))
@@ -250,7 +250,7 @@ struct TimelineEventRow: View {
                             Text("\(restaurant.checkInCount)×")
                                 .font(.system(size: 12, weight: .medium))
                         }
-                        .foregroundStyle(.pink)
+                        .foregroundStyle(.appAccent)
                     }
                     .padding(.top, 2)
                 }

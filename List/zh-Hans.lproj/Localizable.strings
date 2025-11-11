@@ -38,6 +38,7 @@
 "settings.app_language" = "应用语言";
 "settings.appearance" = "外观";
 "settings.theme" = "主题";
+"settings.accent_color" = "主题色";
 
 // Language Settings
 "language.chinese" = "简体中文";
@@ -47,6 +48,16 @@
 "theme.system" = "跟随系统";
 "theme.light" = "浅色";
 "theme.dark" = "深色";
+
+// Accent Colors
+"color.pink" = "粉色";
+"color.blue" = "蓝色";
+"color.purple" = "紫色";
+"color.orange" = "橙色";
+"color.green" = "绿色";
+"color.red" = "红色";
+"color.teal" = "青色";
+"color.indigo" = "靛蓝色";
 
 // Alerts
 "alert.clear_data.title" = "清空所有数据";
@@ -75,9 +86,9 @@
 "beverage.filter.title" = "筛选";
 "beverage.filter.section" = "按评分筛选";
 "beverage.filter.all" = "全部";
-"beverage.filter.high" = "高分 (8-10分)";
-"beverage.filter.medium" = "中等 (5-7分)";
-"beverage.filter.low" = "低分 (1-4分)";
+"beverage.filter.high" = "高分 (80-100分)";
+"beverage.filter.medium" = "中等 (50-79分)";
+"beverage.filter.low" = "低分 (1-49分)";
 "beverage.filter.unrated" = "未评分";
 "beverage.detail.title" = "饮品详情";
 "beverage.detail.shop_name" = "店名";
@@ -91,7 +102,7 @@
 "beverage.section.notes" = "备注";
 "beverage.shop_name_placeholder" = "店名";
 "beverage.date_label" = "日期";
-"beverage.rating_prompt" = "选择评分 (1-10分)";
+"beverage.rating_prompt" = "选择评分 (1-100分)";
 "beverage.notes_placeholder" = "添加备注（可选）";
 
 // Common
@@ -154,9 +165,9 @@
 "restaurant.filter.title" = "筛选";
 "restaurant.filter.section" = "按评分筛选";
 "restaurant.filter.all" = "全部";
-"restaurant.filter.high" = "高分 (8-10分)";
-"restaurant.filter.medium" = "中等 (5-7分)";
-"restaurant.filter.low" = "低分 (1-4分)";
+"restaurant.filter.high" = "高分 (80-100分)";
+"restaurant.filter.medium" = "中等 (50-79分)";
+"restaurant.filter.low" = "低分 (1-49分)";
 "restaurant.filter.unrated" = "未评分";
 "restaurant.detail.title" = "餐厅详情";
 "restaurant.detail.name" = "餐厅名称";
@@ -177,7 +188,7 @@
 "restaurant.name_placeholder" = "餐厅名称";
 "restaurant.location_placeholder" = "地点";
 "restaurant.date_label" = "日期";
-"restaurant.rating_prompt" = "选择评分 (1-10分)";
+"restaurant.rating_prompt" = "选择评分 (1-100分)";
 "restaurant.notes_placeholder" = "添加备注（可选）";
 "restaurant.tags" = "标签";
 "restaurant.add_tag_placeholder" = "添加标签（如：日料、辣）";
@@ -187,6 +198,11 @@
 "rating.points" = "%d 分";
 "rating.unrated" = "未评分";
 "rating.clear" = "清除评分";
+"rating.input.slider" = "滑动";
+"rating.input.quick" = "快选";
+"rating.input.precise" = "精确";
+"rating.common_ratings" = "常用评分";
+"rating.enter_value" = "输入 0-100 的值";
 
 // Travel View
 "travel.title" = "玩 ✈️";

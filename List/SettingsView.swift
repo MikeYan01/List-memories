@@ -46,6 +46,46 @@ struct SettingsView: View {
                         }
                     }
                     .pickerStyle(.menu)
+                    
+                    // Accent Color Picker
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("settings.accent_color".localized())
+                            .font(.body)
+                        
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 16) {
+                            ForEach(AccentColor.allCases) { color in
+                                Button {
+                                    withAnimation(.spring(response: 0.3)) {
+                                        themeManager.accentColor = color
+                                    }
+                                } label: {
+                                    VStack(spacing: 6) {
+                                        ZStack {
+                                            Circle()
+                                                .fill(color.color)
+                                                .frame(width: 44, height: 44)
+                                            
+                                            if themeManager.accentColor == color {
+                                                Circle()
+                                                    .strokeBorder(.white, lineWidth: 3)
+                                                    .frame(width: 44, height: 44)
+                                                
+                                                Image(systemName: "checkmark")
+                                                    .font(.system(size: 18, weight: .bold))
+                                                    .foregroundStyle(.white)
+                                            }
+                                        }
+                                        
+                                        Text(color.displayName)
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                        .padding(.vertical, 8)
+                    }
                 }
                 
                 Section("settings.language".localized()) {
@@ -59,7 +99,7 @@ struct SettingsView: View {
                 }
                 
                 Section("settings.statistics".localized()) {
-                    StatRow(icon: "fork.knife", label: "settings.restaurant".localized(), count: restaurants.count, color: .pink)
+                    StatRow(icon: "fork.knife", label: "settings.restaurant".localized(), count: restaurants.count, color: .appAccent)
                     StatRow(icon: "cup.and.saucer.fill", label: "settings.beverage".localized(), count: beverages.count, color: .orange)
                     StatRow(icon: "airplane.departure", label: "settings.travel".localized(), count: travels.count, color: .blue)
                     StatRow(icon: "theatermasks.fill", label: "settings.recreation".localized(), count: recreations.count, color: .purple)
@@ -246,7 +286,7 @@ struct ImportOptionsView: View {
                     if let url = importURL {
                         HStack {
                             Image(systemName: "doc.fill")
-                                .foregroundStyle(.pink)
+                                .foregroundStyle(.appAccent)
                             VStack(alignment: .leading) {
                                 Text(url.lastPathComponent)
                                     .font(.subheadline)

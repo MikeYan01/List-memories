@@ -38,6 +38,7 @@
 "settings.app_language" = "App Language";
 "settings.appearance" = "Appearance";
 "settings.theme" = "Theme";
+"settings.accent_color" = "Accent Color";
 
 // Language Settings
 "language.chinese" = "简体中文";
@@ -47,6 +48,16 @@
 "theme.system" = "Follow System";
 "theme.light" = "Light";
 "theme.dark" = "Dark";
+
+// Accent Colors
+"color.pink" = "Pink";
+"color.blue" = "Blue";
+"color.purple" = "Purple";
+"color.orange" = "Orange";
+"color.green" = "Green";
+"color.red" = "Red";
+"color.teal" = "Teal";
+"color.indigo" = "Indigo";
 
 // Alerts
 "alert.clear_data.title" = "Clear All Data";
@@ -74,10 +85,11 @@
 "beverage.search_placeholder" = "Search shop name or notes";
 "beverage.filter.title" = "Filter";
 "beverage.filter.section" = "Filter by Rating";
+// Beverage Filter
 "beverage.filter.all" = "All";
-"beverage.filter.high" = "High Rated (8-10)";
-"beverage.filter.medium" = "Medium Rated (5-7)";
-"beverage.filter.low" = "Low Rated (1-4)";
+"beverage.filter.high" = "High Rated (80-100)";
+"beverage.filter.medium" = "Medium Rated (50-79)";
+"beverage.filter.low" = "Low Rated (1-49)";
 "beverage.filter.unrated" = "Unrated";
 "beverage.detail.title" = "Beverage Details";
 "beverage.detail.shop_name" = "Shop Name";
@@ -91,7 +103,7 @@
 "beverage.section.notes" = "Notes";
 "beverage.shop_name_placeholder" = "Shop Name";
 "beverage.date_label" = "Date";
-"beverage.rating_prompt" = "Select rating (1-10)";
+"beverage.rating_prompt" = "Select rating (1-100)";
 "beverage.notes_placeholder" = "Add notes (optional)";
 
 // Common
@@ -153,10 +165,11 @@
 "restaurant.search_placeholder" = "Search restaurant, location or notes";
 "restaurant.filter.title" = "Filter";
 "restaurant.filter.section" = "Filter by Rating";
+// Restaurant Filter
 "restaurant.filter.all" = "All";
-"restaurant.filter.high" = "High Rated (8-10)";
-"restaurant.filter.medium" = "Medium Rated (5-7)";
-"restaurant.filter.low" = "Low Rated (1-4)";
+"restaurant.filter.high" = "High Rated (80-100)";
+"restaurant.filter.medium" = "Medium Rated (50-79)";
+"restaurant.filter.low" = "Low Rated (1-49)";
 "restaurant.filter.unrated" = "Unrated";
 "restaurant.detail.title" = "Restaurant Details";
 "restaurant.detail.name" = "Restaurant Name";
@@ -177,7 +190,7 @@
 "restaurant.name_placeholder" = "Restaurant Name";
 "restaurant.location_placeholder" = "Location";
 "restaurant.date_label" = "Date";
-"restaurant.rating_prompt" = "Select rating (1-10)";
+"restaurant.rating_prompt" = "Select rating (1-100)";
 "restaurant.notes_placeholder" = "Add notes (optional)";
 "restaurant.tags" = "Tags";
 "restaurant.add_tag_placeholder" = "Add tag (e.g., Japanese, Spicy)";
@@ -187,6 +200,11 @@
 "rating.points" = "%d points";
 "rating.unrated" = "Unrated";
 "rating.clear" = "Clear Rating";
+"rating.input.slider" = "Slider";
+"rating.input.quick" = "Quick";
+"rating.input.precise" = "Precise";
+"rating.common_ratings" = "Common ratings";
+"rating.enter_value" = "Enter a value from 0-100";
 
 // Travel View
 "travel.title" = "Travel ✈️";

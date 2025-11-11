@@ -44,7 +44,7 @@ struct BeverageView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     NavigationLink(destination: SettingsView()) {
                         Image(systemName: "gearshape.fill")
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
                 
@@ -53,7 +53,7 @@ struct BeverageView: View {
                         showChronicle = true
                     } label: {
                         Image(systemName: "book.fill")
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
                 
@@ -63,7 +63,7 @@ struct BeverageView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title2)
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
             }
@@ -90,10 +90,18 @@ struct BeverageRow: View {
         VStack(alignment: .leading, spacing: 10) {
             // Header: Shop name and Date
             HStack(alignment: .top) {
-                Text(beverage.shopName)
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(.primary)
-                    .lineLimit(2)
+                HStack(spacing: 6) {
+                    Text(beverage.shopName)
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(.primary)
+                        .lineLimit(2)
+                    
+                    if !beverage.photosData.isEmpty {
+                        Image(systemName: "photo.fill")
+                            .font(.system(size: 12))
+                            .foregroundStyle(.appAccent)
+                    }
+                }
                 
                 Spacer()
                 
@@ -159,7 +167,7 @@ struct BeverageDetailView: View {
                     showingEditSheet = true
                 } label: {
                     Text("common.edit".localized())
-                        .foregroundStyle(.pink)
+                        .foregroundStyle(.appAccent)
                 }
             }
         }
@@ -299,7 +307,7 @@ struct EditBeverageView: View {
                     _ = ToolbarItem(placement: .navigationBarLeading) {
                         NavigationLink(destination: SettingsView()) {
                             Image(systemName: "gearshape.fill")
-                                .foregroundStyle(.pink)
+                                .foregroundStyle(.appAccent)
                         }
                     }
                 shopName = beverage.shopName

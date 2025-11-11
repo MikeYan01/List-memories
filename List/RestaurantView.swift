@@ -93,7 +93,7 @@ struct RestaurantView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     NavigationLink(destination: SettingsView()) {
                         Image(systemName: "gearshape.fill")
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
                 
@@ -102,7 +102,7 @@ struct RestaurantView: View {
                         showChronicle = true
                     } label: {
                         Image(systemName: "book.fill")
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
                 
@@ -112,7 +112,7 @@ struct RestaurantView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title2)
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
             }
@@ -150,10 +150,18 @@ struct RestaurantRow: View {
             // Header: Name and Date
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(restaurant.name)
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(.primary)
-                        .lineLimit(2)
+                    HStack(spacing: 6) {
+                        Text(restaurant.name)
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(.primary)
+                            .lineLimit(2)
+                        
+                        if !restaurant.photosData.isEmpty {
+                            Image(systemName: "photo.fill")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.appAccent)
+                        }
+                    }
                     
                     // Check-in count badge
                     HStack(spacing: 4) {
@@ -164,8 +172,8 @@ struct RestaurantRow: View {
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 3)
-                    .background(Color.pink.opacity(0.15))
-                    .foregroundStyle(.pink)
+                    .background(Color.appAccent.opacity(0.15))
+                    .foregroundStyle(.appAccent)
                     .clipShape(Capsule())
                 }
                 
@@ -180,7 +188,7 @@ struct RestaurantRow: View {
             HStack(spacing: 6) {
                 Image(systemName: "location.fill")
                     .font(.system(size: 12))
-                    .foregroundStyle(.pink.opacity(0.8))
+                    .foregroundStyle(.appAccent.opacity(0.8))
                 Text(restaurant.location)
                     .font(.system(size: 14))
                     .foregroundStyle(.secondary)
@@ -212,12 +220,12 @@ struct RestaurantRow: View {
                                 .padding(.vertical, 5)
                                 .background(
                                     LinearGradient(
-                                        colors: [Color.pink.opacity(0.1), Color.pink.opacity(0.15)],
+                                        colors: [Color.appAccent.opacity(0.1), Color.appAccent.opacity(0.15)],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
                                     )
                                 )
-                                .foregroundStyle(.pink)
+                                .foregroundStyle(.appAccent)
                                 .clipShape(Capsule())
                         }
                     }
@@ -248,7 +256,7 @@ struct RestaurantDetailView: View {
                 // Check-in count row
                 HStack(spacing: 12) {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.pink)
+                        .foregroundStyle(.appAccent)
                         .frame(width: 24)
                     
                     VStack(alignment: .leading, spacing: 4) {
@@ -274,7 +282,7 @@ struct RestaurantDetailView: View {
                         } label: {
                             Image(systemName: "minus.circle.fill")
                                 .font(.system(size: 20))
-                                .foregroundStyle(restaurant.checkInCount > 0 ? .pink : .gray.opacity(0.5))
+                                .foregroundStyle(restaurant.checkInCount > 0 ? .appAccent : .gray.opacity(0.5))
                         }
                         .buttonStyle(.plain)
                         .disabled(restaurant.checkInCount == 0)
@@ -297,7 +305,7 @@ struct RestaurantDetailView: View {
                             .padding(.vertical, 8)
                             .background(
                                 LinearGradient(
-                                    colors: [Color.pink.opacity(0.8), Color.pink],
+                                    colors: [Color.appAccent.opacity(0.8), Color.appAccent],
                                     startPoint: .topLeading,
                                     endPoint: .bottomTrailing
                                 )
@@ -314,7 +322,7 @@ struct RestaurantDetailView: View {
                 if !restaurant.tags.isEmpty {
                     HStack(spacing: 12) {
                         Image(systemName: "tag.fill")
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                             .frame(width: 24)
                         
                         VStack(alignment: .leading, spacing: 4) {
@@ -328,8 +336,8 @@ struct RestaurantDetailView: View {
                                         .fontWeight(.medium)
                                         .padding(.horizontal, 10)
                                         .padding(.vertical, 5)
-                                        .background(Color.pink.opacity(0.15))
-                                        .foregroundStyle(.pink)
+                                        .background(Color.appAccent.opacity(0.15))
+                                        .foregroundStyle(.appAccent)
                                         .clipShape(Capsule())
                                 }
                             }
@@ -363,7 +371,7 @@ struct RestaurantDetailView: View {
                     showingEditSheet = true
                 } label: {
                     Text("common.edit".localized())
-                        .foregroundStyle(.pink)
+                        .foregroundStyle(.appAccent)
                 }
             }
         }
@@ -438,8 +446,8 @@ struct AddRestaurantView: View {
                                     }
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)
-                                    .background(Color.pink.opacity(0.15))
-                                    .foregroundStyle(.pink)
+                                    .background(Color.appAccent.opacity(0.15))
+                                    .foregroundStyle(.appAccent)
                                     .clipShape(Capsule())
                                 }
                             }
@@ -459,7 +467,7 @@ struct AddRestaurantView: View {
                                     addTag()
                                 }) {
                                     Image(systemName: "plus.circle.fill")
-                                        .foregroundStyle(.pink)
+                                        .foregroundStyle(.appAccent)
                                 }
                                 .buttonStyle(.borderless)
                             }
@@ -560,7 +568,7 @@ struct EditRestaurantView: View {
                             } label: {
                                 Image(systemName: "minus.circle.fill")
                                     .font(.system(size: 24))
-                                    .foregroundStyle(checkInCount > 0 ? .pink : .gray.opacity(0.5))
+                                    .foregroundStyle(checkInCount > 0 ? .appAccent : .gray.opacity(0.5))
                             }
                             .buttonStyle(.borderless)
                             .disabled(checkInCount == 0)
@@ -571,7 +579,7 @@ struct EditRestaurantView: View {
                             } label: {
                                 Image(systemName: "plus.circle.fill")
                                     .font(.system(size: 24))
-                                    .foregroundStyle(.pink)
+                                    .foregroundStyle(.appAccent)
                             }
                             .buttonStyle(.borderless)
                         }
@@ -603,8 +611,8 @@ struct EditRestaurantView: View {
                                     }
                                     .padding(.horizontal, 12)
                                     .padding(.vertical, 6)
-                                    .background(Color.pink.opacity(0.15))
-                                    .foregroundStyle(.pink)
+                                    .background(Color.appAccent.opacity(0.15))
+                                    .foregroundStyle(.appAccent)
                                     .clipShape(Capsule())
                                 }
                             }
@@ -624,7 +632,7 @@ struct EditRestaurantView: View {
                                     addTag()
                                 }) {
                                     Image(systemName: "plus.circle.fill")
-                                        .foregroundStyle(.pink)
+                                        .foregroundStyle(.appAccent)
                                 }
                                 .buttonStyle(.borderless)
                             }
@@ -653,7 +661,7 @@ struct EditRestaurantView: View {
                 _ = ToolbarItem(placement: .navigationBarLeading) {
                     NavigationLink(destination: SettingsView()) {
                         Image(systemName: "gearshape.fill")
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
                 name = restaurant.name

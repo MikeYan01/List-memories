@@ -93,7 +93,7 @@ struct RecreationView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     NavigationLink(destination: SettingsView()) {
                         Image(systemName: "gearshape.fill")
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
                 
@@ -102,7 +102,7 @@ struct RecreationView: View {
                         showChronicle = true
                     } label: {
                         Image(systemName: "book.fill")
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
                 
@@ -112,7 +112,7 @@ struct RecreationView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title2)
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
             }
@@ -144,7 +144,7 @@ struct RecreationFilterChip: View {
                 .fontWeight(.medium)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(isSelected ? Color.pink : Color.gray.opacity(0.2))
+                .background(isSelected ? Color.appAccent : Color.gray.opacity(0.2))
                 .foregroundStyle(isSelected ? .white : .primary)
                 .clipShape(Capsule())
         }
@@ -179,7 +179,7 @@ struct RecreationRow: View {
                 .padding(.vertical, 5)
                 .background(
                     LinearGradient(
-                        colors: [Color.pink.opacity(0.8), Color.pink],
+                        colors: [Color.appAccent.opacity(0.8), Color.appAccent],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
@@ -194,17 +194,25 @@ struct RecreationRow: View {
             }
             
             // Name
-            Text(recreation.name)
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(.primary)
-                .lineLimit(2)
+            HStack(spacing: 6) {
+                Text(recreation.name)
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(.primary)
+                    .lineLimit(2)
+                
+                if !recreation.photosData.isEmpty {
+                    Image(systemName: "photo.fill")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.appAccent)
+                }
+            }
             
             // Location
             if !recreation.location.isEmpty {
                 HStack(spacing: 6) {
                     Image(systemName: "location.fill")
                         .font(.system(size: 12))
-                        .foregroundStyle(.pink.opacity(0.8))
+                        .foregroundStyle(.appAccent.opacity(0.8))
                     Text(recreation.location)
                         .font(.system(size: 14))
                         .foregroundStyle(.secondary)
@@ -275,7 +283,7 @@ struct RecreationDetailView: View {
                     showingEditSheet = true
                 } label: {
                     Text("common.edit".localized())
-                        .foregroundStyle(.pink)
+                        .foregroundStyle(.appAccent)
                 }
             }
         }
@@ -453,7 +461,7 @@ struct EditRecreationView: View {
                 _ = ToolbarItem(placement: .navigationBarLeading) {
                         NavigationLink(destination: SettingsView()) {
                             Image(systemName: "gearshape.fill")
-                                .foregroundStyle(.pink)
+                                .foregroundStyle(.appAccent)
                         }
                     }
                 type = recreation.type

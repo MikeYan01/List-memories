@@ -44,7 +44,7 @@ struct TravelView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     NavigationLink(destination: SettingsView()) {
                         Image(systemName: "gearshape.fill")
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
                 
@@ -53,7 +53,7 @@ struct TravelView: View {
                         showChronicle = true
                     } label: {
                         Image(systemName: "book.fill")
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
                 
@@ -63,7 +63,7 @@ struct TravelView: View {
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title2)
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
             }
@@ -105,10 +105,18 @@ struct TravelRow: View {
             // Header: Destination and Date Range
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(travel.destination)
-                        .font(.system(size: 17, weight: .semibold))
-                        .foregroundStyle(.primary)
-                        .lineLimit(2)
+                    HStack(spacing: 6) {
+                        Text(travel.destination)
+                            .font(.system(size: 17, weight: .semibold))
+                            .foregroundStyle(.primary)
+                            .lineLimit(2)
+                        
+                        if !travel.photosData.isEmpty {
+                            Image(systemName: "photo.fill")
+                                .font(.system(size: 12))
+                                .foregroundStyle(.appAccent)
+                        }
+                    }
                     
                     // Status badge
                     if isPlanned {
@@ -222,7 +230,7 @@ struct TravelDetailView: View {
                     showingEditSheet = true
                 } label: {
                     Text("common.edit".localized())
-                        .foregroundStyle(.pink)
+                        .foregroundStyle(.appAccent)
                 }
             }
         }
@@ -369,7 +377,7 @@ struct EditTravelView: View {
                 _ = ToolbarItem(placement: .navigationBarLeading) {
                     NavigationLink(destination: SettingsView()) {
                         Image(systemName: "gearshape.fill")
-                            .foregroundStyle(.pink)
+                            .foregroundStyle(.appAccent)
                     }
                 }
                 destination = travel.destination
