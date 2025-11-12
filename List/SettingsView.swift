@@ -115,6 +115,12 @@ struct SettingsView: View {
                 }
                 
                 Section("settings.data_management".localized()) {
+                    NavigationLink {
+                        WiFiSyncView()
+                    } label: {
+                        Label("sync.title".localized(), systemImage: "wifi")
+                    }
+                    
                     Button {
                         exportData()
                     } label: {

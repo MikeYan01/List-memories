@@ -234,3 +234,55 @@
 "travel.actual_end_date_label" = "实际结束日期";
 "travel.completed_toggle" = "已完成旅行";
 "travel.notes_placeholder" = "添加备注（可选）";
+
+// WiFi Sync
+"sync.title" = "WiFi同步";
+"sync.mode" = "模式";
+"sync.mode.server" = "分享数据";
+"sync.mode.client" = "导入数据";
+"sync.copied" = "已复制！";
+
+// Server Mode
+"sync.server.instructions.title" = "如何分享";
+"sync.server.instructions.step1" = "在此设备上启动服务器";
+"sync.server.instructions.step2" = "记下下面显示的IP地址";
+"sync.server.instructions.step3" = "在另一设备上输入此IP以导入数据";
+"sync.server.running" = "服务器运行中";
+"sync.server.stopped" = "服务器已停止";
+"sync.server.error" = "服务器错误";
+"sync.server.data_sent" = "数据发送成功";
+"sync.server.ip_address" = "IP地址";
+"sync.server.getting_ip" = "正在获取IP地址...";
+"sync.server.port" = "端口";
+"sync.server.ready" = "准备分享";
+"sync.server.start" = "启动服务器";
+"sync.server.stop" = "停止服务器";
+
+// Client Mode
+"sync.client.instructions.title" = "如何导入";
+"sync.client.instructions.step1" = "确保两台设备连接到同一WiFi";
+"sync.client.instructions.step2" = "在另一设备上启动服务器";
+"sync.client.instructions.step3" = "输入另一设备上显示的IP地址";
+"sync.client.enter_ip" = "输入IP地址";
+"sync.client.ip_placeholder" = "192.168.1.100";
+"sync.client.ip_example" = "示例: 192.168.1.100";
+"sync.client.warning.title" = "警告";
+"sync.client.warning.message" = "这将用另一设备的数据替换此设备上的所有数据";
+"sync.client.sync_button" = "立即同步";
+"sync.client.connecting" = "连接中...";
+"sync.client.downloading" = "下载数据中...";
+"sync.client.importing" = "导入数据中...";
+"sync.client.success" = "同步成功完成";
+"sync.client.error" = "同步失败";
+"sync.client.invalid_ip" = "IP地址无效";
+"sync.client.confirm.title" = "确认同步";
+"sync.client.confirm.message" = "这将替换此设备上的所有现有数据。此操作无法撤销。继续？";
+"sync.client.confirm.button" = "替换数据";
+"sync.client.success.title" = "同步完成";
+"sync.client.error.title" = "同步失败";
+
+// Sync Errors
+"sync.error.invalid_ip" = "IP地址格式无效";
+"sync.error.invalid_url" = "连接URL无效";
+"sync.error.server" = "服务器连接失败";
+"sync.error.network" = "网络错误";

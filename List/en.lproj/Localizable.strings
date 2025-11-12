@@ -236,3 +236,55 @@
 "travel.actual_end_date_label" = "Actual End Date";
 "travel.completed_toggle" = "Trip Completed";
 "travel.notes_placeholder" = "Add notes (optional)";
+
+// WiFi Sync
+"sync.title" = "WiFi Sync";
+"sync.mode" = "Mode";
+"sync.mode.server" = "Share Data";
+"sync.mode.client" = "Import Data";
+"sync.copied" = "Copied!";
+
+// Server Mode
+"sync.server.instructions.title" = "How to Share";
+"sync.server.instructions.step1" = "Start the server on this device";
+"sync.server.instructions.step2" = "Note the IP address shown below";
+"sync.server.instructions.step3" = "Enter this IP on another device to import data";
+"sync.server.running" = "Server running";
+"sync.server.stopped" = "Server stopped";
+"sync.server.error" = "Server error";
+"sync.server.data_sent" = "Data sent successfully";
+"sync.server.ip_address" = "IP Address";
+"sync.server.getting_ip" = "Getting IP address...";
+"sync.server.port" = "Port";
+"sync.server.ready" = "Ready to share";
+"sync.server.start" = "Start Server";
+"sync.server.stop" = "Stop Server";
+
+// Client Mode
+"sync.client.instructions.title" = "How to Import";
+"sync.client.instructions.step1" = "Make sure both devices are on the same WiFi";
+"sync.client.instructions.step2" = "Start server on the other device";
+"sync.client.instructions.step3" = "Enter the IP address shown on the other device";
+"sync.client.enter_ip" = "Enter IP Address";
+"sync.client.ip_placeholder" = "192.168.1.100";
+"sync.client.ip_example" = "Example: 192.168.1.100";
+"sync.client.warning.title" = "Warning";
+"sync.client.warning.message" = "This will replace all data on this device with data from the other device";
+"sync.client.sync_button" = "Sync Now";
+"sync.client.connecting" = "Connecting...";
+"sync.client.downloading" = "Downloading data...";
+"sync.client.importing" = "Importing data...";
+"sync.client.success" = "Sync completed successfully";
+"sync.client.error" = "Sync failed";
+"sync.client.invalid_ip" = "Invalid IP address";
+"sync.client.confirm.title" = "Confirm Sync";
+"sync.client.confirm.message" = "This will replace all existing data on this device. This cannot be undone. Continue?";
+"sync.client.confirm.button" = "Replace Data";
+"sync.client.success.title" = "Sync Complete";
+"sync.client.error.title" = "Sync Failed";
+
+// Sync Errors
+"sync.error.invalid_ip" = "Invalid IP address format";
+"sync.error.invalid_url" = "Invalid connection URL";
+"sync.error.server" = "Server connection failed";
+"sync.error.network" = "Network error";
