@@ -115,12 +115,14 @@ struct SettingsView: View {
                 }
                 
                 Section("settings.data_management".localized()) {
+                    // Pairing Sync
                     NavigationLink {
-                        WiFiSyncView()
+                        PairingSyncView()
                     } label: {
-                        Label("sync.title".localized(), systemImage: "wifi")
+                        Label("settings.pairing_sync".localized(), systemImage: "arrow.triangle.2.circlepath")
                     }
                     
+                    // File Export
                     Button {
                         exportData()
                     } label: {
@@ -134,6 +136,7 @@ struct SettingsView: View {
                     }
                     .disabled(totalRecords == 0 || isExporting)
                     
+                    // File Import
                     Button {
                         showingImportPicker = true
                     } label: {

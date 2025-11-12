@@ -29,8 +29,9 @@
 "settings.recreation" = "Recreation";
 "settings.total_records" = "Total Records";
 "settings.data_management" = "Data Management";
-"settings.export_data" = "Export Data";
-"settings.import_data" = "Import Data";
+"settings.pairing_sync" = "Sync with Pairing Code";
+"settings.export_data" = "Export as File";
+"settings.import_data" = "Import from File";
 "settings.clear_all_data" = "Clear All Data";
 "settings.about" = "About";
 "settings.version" = "Version";
@@ -237,54 +238,41 @@
 "travel.completed_toggle" = "Trip Completed";
 "travel.notes_placeholder" = "Add notes (optional)";
 
-// WiFi Sync
-"sync.title" = "WiFi Sync";
-"sync.mode" = "Mode";
-"sync.mode.server" = "Share Data";
-"sync.mode.client" = "Import Data";
-"sync.copied" = "Copied!";
+// Pairing Sync
+"sync.title" = "Pairing Sync";
+"sync.share" = "Share";
+"sync.receive" = "Receive";
+"sync.stop" = "Stop Sharing";
 
-// Server Mode
-"sync.server.instructions.title" = "How to Share";
-"sync.server.instructions.step1" = "Start the server on this device";
-"sync.server.instructions.step2" = "Note the IP address shown below";
-"sync.server.instructions.step3" = "Enter this IP on another device to import data";
-"sync.server.running" = "Server running";
-"sync.server.stopped" = "Server stopped";
-"sync.server.error" = "Server error";
-"sync.server.data_sent" = "Data sent successfully";
-"sync.server.ip_address" = "IP Address";
-"sync.server.getting_ip" = "Getting IP address...";
-"sync.server.port" = "Port";
-"sync.server.ready" = "Ready to share";
-"sync.server.start" = "Start Server";
-"sync.server.stop" = "Stop Server";
+// Share Mode
+"sync.share_title" = "Share Your Data";
+"sync.share_subtitle" = "Generate a 4-digit code for another device";
+"sync.generate_code" = "Generate Pairing Code";
+"sync.pairing_code" = "Pairing Code";
+"sync.enter_code_instruction" = "Enter this code on the other device";
+"sync.server.ready" = "Waiting for connection...";
+"sync.data_sent" = "✓ Data sent successfully!";
 
-// Client Mode
-"sync.client.instructions.title" = "How to Import";
-"sync.client.instructions.step1" = "Make sure both devices are on the same WiFi";
-"sync.client.instructions.step2" = "Start server on the other device";
-"sync.client.instructions.step3" = "Enter the IP address shown on the other device";
-"sync.client.enter_ip" = "Enter IP Address";
-"sync.client.ip_placeholder" = "192.168.1.100";
-"sync.client.ip_example" = "Example: 192.168.1.100";
-"sync.client.warning.title" = "Warning";
-"sync.client.warning.message" = "This will replace all data on this device with data from the other device";
-"sync.client.sync_button" = "Sync Now";
-"sync.client.connecting" = "Connecting...";
-"sync.client.downloading" = "Downloading data...";
-"sync.client.importing" = "Importing data...";
-"sync.client.success" = "Sync completed successfully";
-"sync.client.error" = "Sync failed";
-"sync.client.invalid_ip" = "Invalid IP address";
-"sync.client.confirm.title" = "Confirm Sync";
-"sync.client.confirm.message" = "This will replace all existing data on this device. This cannot be undone. Continue?";
-"sync.client.confirm.button" = "Replace Data";
-"sync.client.success.title" = "Sync Complete";
-"sync.client.error.title" = "Sync Failed";
+// Receive Mode
+"sync.receive_title" = "Receive Data";
+"sync.receive_subtitle" = "Enter the 4-digit code from the other device";
+"sync.enter_code" = "Enter Pairing Code";
+"sync.warning" = "This will replace all data on this device";
+"sync.sync_button" = "Sync Now";
+"sync.searching" = "Searching for server...";
+"sync.scanning_network" = "Scanning local network...";
+"sync.downloading" = "Downloading data...";
+"sync.importing" = "Importing data...";
+"sync.complete" = "Sync completed successfully!";
+"sync.confirm_title" = "Replace All Data?";
+"sync.confirm_message" = "This will replace all existing data on this device. Continue?";
+"sync.confirm_button" = "Replace Data";
+"sync.success_title" = "Sync Complete";
+"sync.error_title" = "Sync Failed";
 
 // Sync Errors
-"sync.error.invalid_ip" = "Invalid IP address format";
+"sync.error" = "Sync error";
+"sync.invalid_code" = "Invalid pairing code";
 "sync.error.invalid_url" = "Invalid connection URL";
 "sync.error.server" = "Server connection failed";
-"sync.error.network" = "Network error";
+"sync.server_not_found" = "Server not found. Make sure both devices are on the same WiFi.";
